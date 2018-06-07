@@ -1,0 +1,22 @@
+dependencies{
+    compile "org.spigotmc:spigot-api:$mc_version"
+    compile "net.md-5:bungeecord-chat:$bc_version"
+    compile "com.google.code.gson:gson:2.8.2"
+    compile files("$rootDir/lib/PowerNBT.jar")
+//    compile "me.dpohvar.powernbt:PowerNBT:0.8.9.2"
+}
+version="1.1"
+def items = project(":SuperItem_items")
+
+task buildArtifact(type: Zip, overwrite:true){
+    dependsOn items.getTasksByName("classes",false)
+    dependsOn jar
+    from("$items.projectDir/out/production/classes"){
+        into('SuperItem/items')
+    }
+    from(jar.archivePath){
+        rename {"SuperItem.jar"}
+    }
+    archiveName ="SuperItem-${project.version}.zip"
+    destinationDir =file("$rootDir/artifacts/")
+}

@@ -1,0 +1,10 @@
+name: SuperItem
+main: cf.wayzer.SuperItem.Main
+version: 1.0
+author: Way__Zer
+description: description!
+commands: 
+  SuperItem:
+    description: SuperItem Main Command
+    usage: /SuperItem help
+    aliases: ["si"]
