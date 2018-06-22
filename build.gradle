@@ -1,12 +1,12 @@
 dependencies{
-    compile "org.spigotmc:spigot-api:$mc_version"
-    compile "net.md-5:bungeecord-chat:$bc_version"
-    compile "com.google.code.gson:gson:2.8.2"
-    compile files("$rootDir/lib/PowerNBT.jar")
+    compileOnly "org.spigotmc:spigot-api:$mc_version"
+    compileOnly "net.md-5:bungeecord-chat:$bc_version"
+    compileOnly "com.google.code.gson:gson:2.8.2"
+    compileOnly files("$rootDir/lib/PowerNBT.jar")
 //    compile "me.dpohvar.powernbt:PowerNBT:0.8.9.2"
 }
 version="1.1"
-def items = project(":SuperItem_items")
+def items = subprojects[0]
 
 task buildArtifact(type: Zip, overwrite:true){
     dependsOn items.getTasksByName("classes",false)

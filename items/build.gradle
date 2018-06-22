@@ -1,0 +1,9 @@
+dependencies {
+    compileOnly parent
+}
+
+sourceSets {
+    main.kotlin.srcDirs += 'src/main/dousha'
+}
+
+buildArtifact.enabled = false
