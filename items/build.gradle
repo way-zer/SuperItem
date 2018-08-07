@@ -1,5 +1,6 @@
 dependencies {
     compileOnly parent
+    compileOnly "org.spigotmc:spigot-api:$mc_version"
 }
 
 sourceSets {

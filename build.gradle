@@ -7,13 +7,9 @@ dependencies{
 }
 version="1.1"
 def items = subprojects[0]
-
 task buildArtifact(type: Zip, overwrite:true){
     dependsOn items.getTasksByName("classes",false)
     dependsOn jar
-    from("$items.projectDir/out/production/classes"){
-        into('SuperItem/items')
-    }
     from(jar.archivePath){
         rename {"SuperItem.jar"}
     }
