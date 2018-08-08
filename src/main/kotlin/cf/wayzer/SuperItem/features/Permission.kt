@@ -97,7 +97,8 @@ class Permission(private val default: String? = null) : Feature<String>(), Featu
          */
         fun Player.canDamage(entity: Entity):Boolean{
             @Suppress("DEPRECATION")
-            return checkEvent(EntityDamageByEntityEvent(this,entity, EntityDamageEvent.DamageCause.ENTITY_ATTACK,1.0))
+            val event = EntityDamageByEntityEvent(this,entity, EntityDamageEvent.DamageCause.ENTITY_ATTACK,2.0)
+            return checkEvent(event)&&event.damage>=1.0
         }
     }
 }
