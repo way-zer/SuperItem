@@ -1,6 +1,7 @@
 import cf.wayzer.SuperItem.Item
 import cf.wayzer.SuperItem.Main
 import cf.wayzer.SuperItem.features.ItemInfo
+import cf.wayzer.SuperItem.features.Permission
 import cf.wayzer.SuperItem.features.Recipe
 import org.bukkit.Material
 import org.bukkit.entity.Entity
@@ -78,7 +79,7 @@ class Wolf_Bone : Item() {
         if (e.action == Action.RIGHT_CLICK_AIR || e.action == Action.RIGHT_CLICK_BLOCK) {
             val p = e.player
             val item = e.item
-            if (isItem(item) && permission.hasPermission(p)) {
+            if (isItem(item) && get<Permission>().hasPermission(p)) {
                 e.isCancelled = true
                 if (item.amount <= 1)
                     item.type = Material.AIR

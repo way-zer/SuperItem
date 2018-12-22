@@ -1,6 +1,7 @@
 import cf.wayzer.SuperItem.Item
 import cf.wayzer.SuperItem.features.ItemInfo
 import cf.wayzer.SuperItem.features.NBT
+import cf.wayzer.SuperItem.features.Permission
 import cf.wayzer.SuperItem.features.Recipe
 import org.bukkit.Material
 import org.bukkit.event.EventHandler
@@ -20,7 +21,7 @@ class Complex_Chestplate : Item() {
     fun onUse(e: PlayerInteractEvent) {
         val p = e.player
         if (p.isSneaking && e.action != Action.PHYSICAL && isItem(p.inventory.chestplate)
-                && permission.hasPermission(p)) {
+                && get<Permission>().hasPermission(p)) {
             e.isCancelled = true
             if (e.action == Action.LEFT_CLICK_AIR || e.action == Action.LEFT_CLICK_BLOCK) {
                 p.openWorkbench(p.location, true)

@@ -1,5 +1,6 @@
 import cf.wayzer.SuperItem.Item
 import cf.wayzer.SuperItem.features.ItemInfo
+import cf.wayzer.SuperItem.features.Permission
 import org.bukkit.Effect
 import org.bukkit.Material
 import org.bukkit.entity.EntityType
@@ -19,7 +20,7 @@ class FLAMES_SKULL : Item() {
         if (e.damager is Player) {
             val p = e.damager as Player
             for (item in p.inventory.armorContents) {
-                if (isItem(item) && permission.hasPermission(p)) {
+                if (isItem(item) && get<Permission>().hasPermission(p)) {
                     playEffect(p)
                     val old = e.entity.fireTicks
                     e.entity.fireTicks = if (old > 0) old + 5 else 5
@@ -28,15 +29,12 @@ class FLAMES_SKULL : Item() {
         }
         if (e.entity is Player) {
             val p = e.entity as Player
-            p.inventory.armorContents
-                    .filter { isItem(it) }
-                    .forEach {
-                        if (permission.hasPermission(p)) {
-                            playEffect(p)
-                            val old = e.damager.fireTicks
-                            e.damager.fireTicks = if (old > 0) old + 15 else 15
-                        }
-                    }
+            if(p.inventory.armorContents.any { isItem(it) }
+                    &&get<Permission>().hasPermission(p)) {
+                playEffect(p)
+                val old = e.damager.fireTicks
+                e.damager.fireTicks = if (old > 0) old + 15 else 15
+            }
         }
     }
 
@@ -46,14 +44,9 @@ class FLAMES_SKULL : Item() {
             return
         if (FIRECAUSES.contains(e.cause)) {
             val p = e.entity as Player
-            p.inventory.armorContents
-                    .filter { isItem(it) }
-                    .forEach {
-                        if (permission.hasPermission(p)) {
-                            e.isCancelled = true
-                            return
-                        }
-                    }
+            if(p.inventory.armorContents.any { isItem(it) }
+                    && get<Permission>().hasPermission(p))
+                e.isCancelled = true
         }
     }
 

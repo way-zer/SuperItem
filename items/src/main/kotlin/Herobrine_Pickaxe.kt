@@ -2,6 +2,7 @@ import cf.wayzer.SuperItem.Item
 import cf.wayzer.SuperItem.Main
 import cf.wayzer.SuperItem.features.Durability
 import cf.wayzer.SuperItem.features.ItemInfo
+import cf.wayzer.SuperItem.features.Permission
 import cf.wayzer.SuperItem.features.Recipe
 import org.bukkit.Location
 import org.bukkit.Material
@@ -29,7 +30,7 @@ class Herobrine_Pickaxe : Item() {
             return
         if (e.block.type == Material.STONE) {
             val p = e.player
-            if (isItem(p.inventory.itemInMainHand) && permission.hasPermission(p)) {
+            if (isItem(p.inventory.itemInMainHand) && get<Permission>().hasPermission(p)) {
                 spawnEntity(e.block.location)
             }
         }
@@ -37,11 +38,11 @@ class Herobrine_Pickaxe : Item() {
 
     private fun spawnEntity(loc: Location) {
         val item: ItemStack
-        if (Item.Companion.getProbability(1, 10)) {
+        if (Item.getProbability(1, 10)) {
             item = ItemStack(Material.BREAD)
-        } else if (Item.Companion.getProbability(1, 10)) {
+        } else if (Item.getProbability(1, 10)) {
             item = ItemStack(Material.APPLE)
-        } else if (Item.Companion.getProbability(1, 20)) {
+        } else if (Item.getProbability(1, 20)) {
             item = ItemStack(Material.COOKED_BEEF)
         } else {
             return

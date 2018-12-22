@@ -1,6 +1,7 @@
 import cf.wayzer.SuperItem.Item
 import cf.wayzer.SuperItem.features.ItemInfo
 import cf.wayzer.SuperItem.features.NBT
+import cf.wayzer.SuperItem.features.Permission
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -26,7 +27,7 @@ class PortableBlackhole : Item() {
     fun onHit(e: EntityDamageByEntityEvent) {
         if (e.damager is Player) {
             val player = e.damager as Player
-            if (isItem(player.inventory.helmet) && permission.hasPermission(player)) {
+            if (isItem(player.inventory.helmet) && get<Permission>().hasPermission(player)) {
                 val playerPos = player.location
                 val victimPos = e.entity.location
                 val velocity = playerPos.subtract(victimPos).toVector().normalize().multiply(1.2).add(Vector(.0, .2, .0))

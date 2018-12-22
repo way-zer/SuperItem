@@ -10,7 +10,7 @@ import java.util.*
  * 冷却功能
  * @param defaultTime 默认冷却时间(ms)
  */
-class CoolDown(override val defaultData: Long) : Feature<Long>(), Feature.OnPostLoad {
+class CoolDown(override val defaultData: Long) : Feature<Long>() {
     private val coolDown = mutableMapOf<UUID, Long>()
 
     /**
@@ -40,9 +40,5 @@ class CoolDown(override val defaultData: Long) : Feature<Long>(), Feature.OnPost
      */
     fun remove(p: Player) {
         coolDown.remove(p.uniqueId)
-    }
-
-    override fun onPostLoad(main: Main) {
-        item.coolDown = this
     }
 }

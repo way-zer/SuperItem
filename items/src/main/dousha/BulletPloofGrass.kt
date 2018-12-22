@@ -1,5 +1,6 @@
 import cf.wayzer.SuperItem.Item
 import cf.wayzer.SuperItem.features.ItemInfo
+import cf.wayzer.SuperItem.features.Permission
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -18,7 +19,7 @@ class BulletPloofGrass : Item() {
     fun onBeingHit(e: EntityDamageByEntityEvent) {
         if (e.entity is Player) {
             val player = e.entity as Player
-            if (isItem(player.inventory.chestplate) && permission.hasPermission(player)) {
+            if (isItem(player.inventory.chestplate) && get<Permission>().hasPermission(player)) {
                 if (e.damager is Projectile && e.damage > 0.0) {
                     // you know, it's unfair that you can get smashed to death
                     // with snow balls and eggs.

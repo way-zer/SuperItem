@@ -1,6 +1,7 @@
 import cf.wayzer.SuperItem.Item
 import cf.wayzer.SuperItem.features.Effect
 import cf.wayzer.SuperItem.features.ItemInfo
+import cf.wayzer.SuperItem.features.Permission
 import cf.wayzer.SuperItem.features.Recipe
 import org.bukkit.Material
 import org.bukkit.Particle
@@ -42,7 +43,7 @@ class CutSplitSword : Item() {
         if (e.entity is Player && e.damager is Player) {
             val p = e.damager as Player
             val item = p.inventory.itemInMainHand
-            if (isItem(item) && permission.hasPermission(p)) {
+            if (isItem(item) && get<Permission>().hasPermission(p)) {
                 playEffect(p)
             }
         }
@@ -52,7 +53,7 @@ class CutSplitSword : Item() {
     fun ondeath(e: PlayerDeathEvent) {
         val p = e.entity.killer ?: return
         val item = p.inventory.itemInMainHand
-        if (isItem(item) && permission.hasPermission(p)) {
+        if (isItem(item) && get<Permission>().hasPermission(p)) {
             effect.setEffect(p, 0)
         }
     }

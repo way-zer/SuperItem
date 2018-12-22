@@ -1,5 +1,6 @@
 import cf.wayzer.SuperItem.Item
 import cf.wayzer.SuperItem.features.ItemInfo
+import cf.wayzer.SuperItem.features.Permission
 import org.bukkit.Material
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Fireball
@@ -25,7 +26,7 @@ class Ipecac_Agent : Item() {
     @EventHandler
     fun onDrink(e: PlayerItemConsumeEvent) {
         val p = e.player
-        if (isItem(e.item) && permission.hasPermission(p)) {
+        if (isItem(e.item) && get<Permission>().hasPermission(p)) {
             val ball = p.world.spawnEntity(p.location.add(0.0, 1.0, 0.0), EntityType.FIREBALL) as Fireball
             ball.shooter = p
             ball.velocity = p.location.direction.multiply(2)

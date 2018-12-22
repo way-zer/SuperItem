@@ -51,7 +51,7 @@ class NBT(override vararg val defaultData: AttributeModifier) : Feature<Array<ou
     )
 
     override fun onPostLoad(main: Main) {
-        val nbt = api.read(item.item).compound("tag").list("AttributeModifiers")
+        val nbt = api.read(item.get<ItemInfo>().itemStack).compound("tag").list("AttributeModifiers")
         data.forEach {
             if (it.amount < it.type.max) {
                 val node = NBTCompound()

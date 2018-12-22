@@ -1,9 +1,7 @@
 import cf.wayzer.SuperItem.Item
-import cf.wayzer.SuperItem.features.CoolDown
-import cf.wayzer.SuperItem.features.Durability
-import cf.wayzer.SuperItem.features.ItemInfo
-import cf.wayzer.SuperItem.features.Recipe
+import cf.wayzer.SuperItem.features.*
 import org.bukkit.*
+import org.bukkit.Effect
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -30,7 +28,7 @@ class ENDED_CHESTPLATE : Item() {
         if ((e.action == Action.RIGHT_CLICK_BLOCK || e.action == Action.RIGHT_CLICK_AIR) && ITEMS.contains(e.material)) {
             val p = e.player
             if (isItem(p.inventory.chestplate)) {
-                if (permission.hasPermission(p) && coolDown.isCoolDownOK(p)) {
+                if (get<Permission>().hasPermission(p) && get<CoolDown>().isCoolDownOK(p)) {
                     e.isCancelled = true
                     val targetLoc = e.player.getTargetBlock(null as Set<Material>?, 7).location.add(0.0,
                             1.0, 0.0)
@@ -39,7 +37,7 @@ class ENDED_CHESTPLATE : Item() {
                     if (targetLoc.distanceSquared(p.location) < 7)
                         p.sendMessage(ChatColor.RED.toString() + "你不能传送那么远!")
                     else {
-                        coolDown.add(p)
+                        get<CoolDown>().add(p)
                         playEffect(p)
                         p.teleport(targetLoc)
                         playEffect(p)
@@ -54,7 +52,7 @@ class ENDED_CHESTPLATE : Item() {
     fun onClick(e: InventoryClickEvent) {
         if (e.rawSlot == 6 && e.clickedInventory.type == InventoryType.PLAYER)
             if (isItem(e.currentItem)) {
-                if (permission.hasPermission(e.whoClicked as Player))
+                if (get<Permission>().hasPermission(e.whoClicked as Player))
                     playEffect(e.whoClicked as Player)
                 else
                     e.isCancelled = true
@@ -67,7 +65,7 @@ class ENDED_CHESTPLATE : Item() {
             val p = e.entity as Player
             for (item in p.inventory.armorContents) {
                 if (isItem(item)) {
-                    if (permission.hasPermission(p)) {
+                    if (get<Permission>().hasPermission(p)) {
                         e.damage = e.damage * 4 / 5
                     }
                     return

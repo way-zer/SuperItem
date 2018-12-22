@@ -2,6 +2,7 @@ import cf.wayzer.SuperItem.Item
 import cf.wayzer.SuperItem.features.CoolDown
 import cf.wayzer.SuperItem.features.Effect
 import cf.wayzer.SuperItem.features.ItemInfo
+import cf.wayzer.SuperItem.features.Permission
 import org.bukkit.*
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -23,11 +24,11 @@ class MudWalker : Item() {
     @EventHandler
     fun onPlayerCrouch(e: PlayerToggleSneakEvent) {
         if (isItem(e.player.inventory.boots)
-                && permission.hasPermission(e.player)
-                && coolDown.isCoolDownOK(e.player)) {
+                && get<Permission>().hasPermission(e.player)
+                && get<CoolDown>().isCoolDownOK(e.player)) {
             if (e.isSneaking) {
                 addEffectRing(e.player.world, e.player.location, e.player)
-                coolDown.add(e.player)
+                get<CoolDown>().add(e.player)
             }
         }
     }

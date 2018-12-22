@@ -1,6 +1,7 @@
 import cf.wayzer.SuperItem.Item
 import cf.wayzer.SuperItem.features.CoolDown
 import cf.wayzer.SuperItem.features.ItemInfo
+import cf.wayzer.SuperItem.features.Permission
 import cf.wayzer.util.BarUtil
 import org.bukkit.Location
 import org.bukkit.Material
@@ -19,9 +20,9 @@ class Dagger : Item() {
     fun onAttack(e: EntityDamageByEntityEvent) {
         if (e.damager is Player) {
             val p = e.damager as Player
-            if (isItem(p.inventory.itemInMainHand) && permission.hasPermission(p)) {
-                if (coolDown.isCoolDownOK(p) && isBack(e.entity.location, p)) {
-                    coolDown.add(p)
+            if (isItem(p.inventory.itemInMainHand) && get<Permission>().hasPermission(p)) {
+                if (get<CoolDown>().isCoolDownOK(p) && isBack(e.entity.location, p)) {
+                    get<CoolDown>().add(p)
                     e.damage = (e.damage + 3) * 3
                     BarUtil.sendToPlayer(p, "§a===§e偷袭成功§a===")
                 } else {

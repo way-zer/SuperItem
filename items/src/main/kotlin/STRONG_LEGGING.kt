@@ -1,8 +1,5 @@
 import cf.wayzer.SuperItem.Item
-import cf.wayzer.SuperItem.features.Durability
-import cf.wayzer.SuperItem.features.Effect
-import cf.wayzer.SuperItem.features.ItemInfo
-import cf.wayzer.SuperItem.features.Recipe
+import cf.wayzer.SuperItem.features.*
 import org.bukkit.Color
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -30,7 +27,7 @@ class STRONG_LEGGING : Item() {
     fun onSprint(e: PlayerToggleSprintEvent) {
         val p = e.player
         if (e.isSprinting) {
-            if (isItem(p.inventory.leggings) && permission.hasPermission(p)) {
+            if (isItem(p.inventory.leggings) && get<Permission>().hasPermission(p)) {
                 effect.setEffect(p)
             }
         } else if (effect.hasLongTimeEffect(p)) {
@@ -44,7 +41,7 @@ class STRONG_LEGGING : Item() {
             val p = e.entity as Player
             for (item in p.inventory.armorContents) {
                 if (isItem(item)) {
-                    if (permission.hasPermission(p)) {
+                    if (get<Permission>().hasPermission(p)) {
                         e.damage = e.damage * 9 / 10
                     }
                     return

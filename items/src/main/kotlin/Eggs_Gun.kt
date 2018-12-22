@@ -2,6 +2,7 @@ import cf.wayzer.SuperItem.Item
 import cf.wayzer.SuperItem.Main
 import cf.wayzer.SuperItem.features.CoolDown
 import cf.wayzer.SuperItem.features.ItemInfo
+import cf.wayzer.SuperItem.features.Permission
 import cf.wayzer.util.BarUtil
 import org.bukkit.Material
 import org.bukkit.Sound
@@ -70,9 +71,9 @@ class Eggs_Gun : Item() {
     fun onShoot(e: PlayerInteractEvent) {
         if (e.action == Action.RIGHT_CLICK_AIR || e.action == Action.RIGHT_CLICK_BLOCK) {
             val p = e.player
-            if (isItem(e.item) && permission.hasPermission(p) && coolDown.isCoolDownOK(p)) {
+            if (isItem(e.item) && get<Permission>().hasPermission(p) && get<CoolDown>().isCoolDownOK(p)) {
                 e.isCancelled = true
-                coolDown.add(p)
+                get<CoolDown>().add(p)
                 val snow = p.world.spawnEntity(p.location.add(0.0, 1.0, 0.0), EntityType.SNOWBALL) as Snowball
                 snow.shooter = p
                 snow.velocity = p.location.direction.multiply(3)
@@ -81,7 +82,7 @@ class Eggs_Gun : Item() {
             }
         } else if (e.action == Action.LEFT_CLICK_AIR || e.action == Action.LEFT_CLICK_BLOCK) {
             val p = e.player
-            if (isItem(e.item) && permission.hasPermission(p)) {
+            if (isItem(e.item) && get<Permission>().hasPermission(p)) {
                 e.isCancelled = true
                 if (players.contains(p)) {
                     players.remove(p)

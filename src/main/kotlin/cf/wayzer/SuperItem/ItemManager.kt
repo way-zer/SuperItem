@@ -4,6 +4,7 @@ import cf.wayzer.SuperItem.Main.Companion.main
 import cf.wayzer.SuperItem.features.NBT
 import cf.wayzer.SuperItem.features.Permission
 import cf.wayzer.SuperItem.features.Texture
+import cf.wayzer.SuperItem.Item.Companion.require
 import com.google.gson.JsonObject
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
@@ -34,11 +35,11 @@ object ItemManager {
             try {
                 val c = ucl.loadClass(name)
                 if (c.superclass == Item::class.java) {
-                    val item = c.newInstance() as Item
+                    val item = c.getConstructor().newInstance() as Item
                     registerItem0(item)
                 }
             } catch (e: Exception) {
-                logger.log(Level.SEVERE, "注册物品失败: " + name, e)
+                logger.log(Level.SEVERE, "注册物品失败: $name", e)
             }
         }
         Main.main.saveConfig()
@@ -63,30 +64,34 @@ object ItemManager {
             config.add(classname, cf)
             cf
         }
+        postLoads.clear()
         item.loadFeatures()
-        item.require0(Permission())
-        item.require0(Texture())
+        item.require(Permission())
+        item.require(Texture())
+        postLoads.forEach { it.onPostLoad(main) }
 
         cs = null
         Main.main.server.pluginManager.registerEvents(item, Main.main)
         items[classname] = item
-        logger.info("注册物品成功: " + classname)
+        logger.info("注册物品成功: $classname")
     }
 
+    private val postLoads : MutableList<Feature.OnPostLoad> = mutableListOf()
     /**
      * 请求Feature
-     * 仅在loadFeatures可用
+     * 仅供item.require()调用
      */
-    fun <H : Any, T : Feature<H>> Item.require0(feature: T): T {
+    fun <H:Any,T : Feature<out H>> Item.require0(feature: T): T {
         feature.item = this
         val name = feature::class.java.simpleName
         if (!cs!!.has(name)) {
             cs!!.add(name, main.gson.toJsonTree(feature.defaultData))
         }
-        feature.data = main.gson.fromJson(cs!![name], feature.defaultData::class.java)
+        @Suppress("UNCHECKED_CAST")
+        (feature as Feature<H>).data = main.gson.fromJson(cs!![name], feature.defaultData::class.java)
 
         if (feature is Feature.OnPostLoad) {
-            feature.onPostLoad(Main.main)
+            postLoads.add(feature)
         }
         if (feature is Feature.HasListener) {
             Main.main.server.pluginManager.registerEvents(feature.listener, Main.main)

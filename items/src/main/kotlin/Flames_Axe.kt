@@ -1,6 +1,7 @@
 import cf.wayzer.SuperItem.Item
 import cf.wayzer.SuperItem.features.CoolDown
 import cf.wayzer.SuperItem.features.ItemInfo
+import cf.wayzer.SuperItem.features.Permission
 import cf.wayzer.SuperItem.features.Recipe
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
@@ -26,8 +27,8 @@ class Flames_Axe : Item() {
         if (e.damager is Player) {
             val p = e.damager as Player
             if (isItem(p.inventory.itemInMainHand)) {
-                if (permission.hasPermission(p) && coolDown.isCoolDownOK(p)) {
-                    coolDown.add(p)
+                if (get<Permission>().hasPermission(p) && get<CoolDown>().isCoolDownOK(p)) {
+                    get<CoolDown>().add(p)
                 } else
                     e.damage = 1.0
             }

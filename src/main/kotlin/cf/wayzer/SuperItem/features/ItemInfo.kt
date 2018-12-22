@@ -23,7 +23,7 @@ class ItemInfo(
 //        private val setOther: (ItemMeta) -> Unit = {},
         private val loadOther: (ItemMeta, ItemStack) -> Unit = { _, _ -> }
 ) : Feature<ItemInfo.Data>(), Feature.OnPostLoad {
-    private lateinit var itemStack: ItemStack
+    lateinit var itemStack: ItemStack private set
 
     override val defaultData: Data
         get() = Data(defaultMaterial, defaultDamage, defaultName, defaultLore)
@@ -48,6 +48,6 @@ class ItemInfo(
         nbt["SICN"] = item::class.java.simpleName
         NBT.api.write(itemStack, nbt)
 
-        item.item = itemStack
+        item.get<ItemInfo>().itemStack = itemStack
     }
 }

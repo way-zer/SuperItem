@@ -1,6 +1,7 @@
 import cf.wayzer.SuperItem.Item
 import cf.wayzer.SuperItem.features.Durability
 import cf.wayzer.SuperItem.features.ItemInfo
+import cf.wayzer.SuperItem.features.Permission
 import cf.wayzer.SuperItem.features.Recipe
 import cf.wayzer.util.BarUtil
 import org.bukkit.Material
@@ -99,7 +100,7 @@ class Machinery_Bow : Item() {
         if (e.isCancelled)
             return
         val p = e.entity as Player
-        if (isItem(e.bow) && permission.hasPermission(p)) {
+        if (isItem(e.bow) && get<Permission>().hasPermission(p)) {
             e.isCancelled = true
             currentInfos[p]?.let {
                 if (it.onUse()) {
@@ -120,7 +121,7 @@ class Machinery_Bow : Item() {
     fun onChange(e: PlayerInteractEvent) {
         if (e.action == Action.LEFT_CLICK_AIR || e.action == Action.LEFT_CLICK_BLOCK) {
             val p = e.player
-            if (isItem(e.item) && permission.hasPermission(p)) {
+            if (isItem(e.item) && get<Permission>().hasPermission(p)) {
                 var info: CurrentInfo? = currentInfos[p]
                 if (info == null) {
                     info = CurrentInfo(p)

@@ -2,6 +2,7 @@ import cf.wayzer.SuperItem.Item
 import cf.wayzer.SuperItem.features.Effect
 import cf.wayzer.SuperItem.features.Effect.Companion.Long_Time
 import cf.wayzer.SuperItem.features.ItemInfo
+import cf.wayzer.SuperItem.features.Permission
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -23,7 +24,7 @@ class SpringBoots : Item() {
 
     @EventHandler
     fun onPlayerCrouch(e: PlayerToggleSneakEvent) {
-        if (isItem(e.player.inventory.boots) && permission.hasPermission(e.player)) {
+        if (isItem(e.player.inventory.boots) && get<Permission>().hasPermission(e.player)) {
             if (e.isSneaking) {
                 sfx.setEffect(e.player)
             } else {
@@ -34,7 +35,7 @@ class SpringBoots : Item() {
 
     @EventHandler
     fun onPlayerSprint(e: PlayerToggleSprintEvent) {
-        if (isItem(e.player.inventory.boots) && permission.hasPermission(e.player)) {
+        if (isItem(e.player.inventory.boots) && get<Permission>().hasPermission(e.player)) {
             if (e.isSprinting) {
                 sfx.setEffect(e.player)
             } else {
@@ -47,7 +48,7 @@ class SpringBoots : Item() {
     fun onPlayerFall(e: EntityDamageEvent) {
         if (e.entity is Player &&
                 e.cause == EntityDamageEvent.DamageCause.FALL &&
-                permission.hasPermission(e.entity as Player) &&
+                get<Permission>().hasPermission(e.entity as Player) &&
                 isItem((e.entity as Player).inventory.boots)) {
             e.isCancelled = true
         }

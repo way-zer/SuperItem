@@ -24,7 +24,7 @@ import org.bukkit.event.inventory.CraftItemEvent
  * 为物品绑定权限
  * @param default 物品的权限(默认superitem.name)
  */
-class Permission(private val default: String? = null) : Feature<String>(), Feature.OnPostLoad, Feature.HasListener, Listener {
+class Permission(private val default: String? = null) : Feature<String>(), Feature.HasListener, Listener {
     override val defaultData by lazy { default ?: "superitem.${item::class.java.name}" }
 
     /**
@@ -40,10 +40,6 @@ class Permission(private val default: String? = null) : Feature<String>(), Featu
                 false
             }
         }
-    }
-
-    override fun onPostLoad(main: Main) {
-        item.permission = this
     }
 
     override val listener: Listener

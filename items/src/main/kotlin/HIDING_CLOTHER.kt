@@ -34,8 +34,8 @@ class HIDING_CLOTHER : Item() {
     fun onShift(e: PlayerToggleSneakEvent) {
         val p = e.player
         if (e.isSneaking) {
-            if (isItem(p.inventory.chestplate) && permission.hasPermission(p) && coolDown.isCoolDownOK(p)) {
-                coolDown.add(p)
+            if (isItem(p.inventory.chestplate) && get<Permission>().hasPermission(p) && get<CoolDown>().isCoolDownOK(p)) {
+                get<CoolDown>().add(p)
                 players.add(p)
                 effect.setEffect(p)
             }

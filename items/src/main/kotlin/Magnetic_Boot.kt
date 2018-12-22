@@ -1,6 +1,7 @@
 import cf.wayzer.SuperItem.Item
 import cf.wayzer.SuperItem.features.Durability
 import cf.wayzer.SuperItem.features.ItemInfo
+import cf.wayzer.SuperItem.features.Permission
 import cf.wayzer.SuperItem.features.Recipe
 import org.bukkit.Material
 import org.bukkit.entity.EntityType
@@ -21,7 +22,7 @@ class Magnetic_Boot : Item() {
     fun onAttect(e: EntityDamageByEntityEvent) {
         if (e.entityType == EntityType.PLAYER) {
             val p = e.entity as Player
-            if (isItem(p.inventory.boots) && permission.hasPermission(p)) {
+            if (isItem(p.inventory.boots) && get<Permission>().hasPermission(p)) {
                 if (Item.Companion.getProbability(6, 10)) {
                     e.isCancelled = true
                     p.damage(e.damage)
@@ -36,7 +37,7 @@ class Magnetic_Boot : Item() {
             val p = e.entity as Player
             for (item in p.inventory.armorContents) {
                 if (isItem(item)) {
-                    if (permission.hasPermission(p)) {
+                    if (get<Permission>().hasPermission(p)) {
                         e.damage = e.damage * 9 / 10
                     }
                     return

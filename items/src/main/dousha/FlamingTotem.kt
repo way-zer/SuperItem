@@ -1,5 +1,6 @@
 import cf.wayzer.SuperItem.Item
 import cf.wayzer.SuperItem.features.ItemInfo
+import cf.wayzer.SuperItem.features.Permission
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -17,7 +18,7 @@ class FlamingTotem : Item() {
     fun onDamage(e: EntityDamageByEntityEvent) {
         if (e.damager is Player) {
             val player = e.damager as Player
-            if (isItem(player.inventory.itemInOffHand) && permission.hasPermission(player)) {
+            if (isItem(player.inventory.itemInOffHand) && get<Permission>().hasPermission(player)) {
                 e.entity.fireTicks = 40
             }
         }

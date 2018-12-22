@@ -1,6 +1,7 @@
 import cf.wayzer.SuperItem.Item
 import cf.wayzer.SuperItem.features.Effect
 import cf.wayzer.SuperItem.features.ItemInfo
+import cf.wayzer.SuperItem.features.Permission
 import cf.wayzer.SuperItem.features.Recipe
 import org.bukkit.Material
 import org.bukkit.entity.LivingEntity
@@ -27,7 +28,7 @@ class Damascus_knife : Item() {
         if (e.isCancelled) return
         if (e.damager is Player) {
             val p = e.damager as Player
-            if (isItem(p.inventory.itemInMainHand) && permission.hasPermission(p)) {
+            if (isItem(p.inventory.itemInMainHand) && get<Permission>().hasPermission(p)) {
                 if (!e.entity.isDead) {
                     effect.setEffect(e.entity as LivingEntity)
                 }

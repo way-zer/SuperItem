@@ -1,5 +1,6 @@
 import cf.wayzer.SuperItem.Item
 import cf.wayzer.SuperItem.features.ItemInfo
+import cf.wayzer.SuperItem.features.Permission
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -17,7 +18,7 @@ class DoubleHandedAxe : Item() {
     fun onPlayerAttack(e: EntityDamageByEntityEvent) { /// XXX: Performance?
         if (e.damager is Player) {
             val player = e.damager as Player
-            if (permission.hasPermission(player)
+            if (get<Permission>().hasPermission(player)
                     && isItem(player.inventory.itemInMainHand) && isItem(player.inventory.itemInOffHand)) {
                 e.damage += 5.0
             }

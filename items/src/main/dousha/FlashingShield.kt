@@ -3,6 +3,7 @@ import cf.wayzer.SuperItem.features.CoolDown
 import cf.wayzer.SuperItem.features.Effect
 import cf.wayzer.SuperItem.features.Effect.EffectData
 import cf.wayzer.SuperItem.features.ItemInfo
+import cf.wayzer.SuperItem.features.Permission
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -25,7 +26,7 @@ class FlashingShield : Item() {
     @EventHandler
     fun onPlayerRightClick(e: PlayerInteractEvent) {
         if (e.action == Action.RIGHT_CLICK_BLOCK || e.action == Action.RIGHT_CLICK_AIR) {
-            if (isItem(e.player.inventory.itemInMainHand) && permission.hasPermission(e.player)) {
+            if (isItem(e.player.inventory.itemInMainHand) && get<Permission>().hasPermission(e.player)) {
                 applyEffects(e.player)
             }
         }
@@ -33,7 +34,7 @@ class FlashingShield : Item() {
 
     @EventHandler
     fun onPlayerRightClickOnSomething(e: PlayerInteractAtEntityEvent) {
-        if (isItem(e.player.inventory.itemInMainHand) && permission.hasPermission(e.player)) {
+        if (isItem(e.player.inventory.itemInMainHand) && get<Permission>().hasPermission(e.player)) {
             applyEffects(e.player)
         }
     }

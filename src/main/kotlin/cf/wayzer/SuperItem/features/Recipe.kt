@@ -13,7 +13,7 @@ import cf.wayzer.util.RecipeUtil
  */
 class Recipe(override val defaultData: String) : Feature<String>(), Feature.OnPostLoad, Feature.OnDisable {
     override fun onPostLoad(main: Main) {
-        val recipe = RecipeUtil.getByString(item.item, data)
+        val recipe = RecipeUtil.getByString(item.get<ItemInfo>().itemStack, data)
         main.server.addRecipe(recipe)
     }
 

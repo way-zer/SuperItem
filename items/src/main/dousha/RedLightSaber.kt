@@ -1,6 +1,7 @@
 import cf.wayzer.SuperItem.Item
 import cf.wayzer.SuperItem.ItemManager
 import cf.wayzer.SuperItem.features.ItemInfo
+import cf.wayzer.SuperItem.features.Permission
 import org.bukkit.ChatColor.*
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -21,7 +22,7 @@ class RedLightSaber : Item() {
             val attacker = e.damager as Player
             val victim = e.entity as Player
             if (isItem(attacker.inventory.itemInMainHand)
-                    && permission.hasPermission(attacker)
+                    && get<Permission>().hasPermission(attacker)
                     && ItemManager.getItem("BlueLightSaber")?.isItem(victim.inventory.itemInMainHand) == true) {
                 e.damage /= 2.0
             }

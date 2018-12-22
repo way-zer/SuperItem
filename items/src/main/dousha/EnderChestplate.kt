@@ -3,6 +3,7 @@ import cf.wayzer.SuperItem.events.ArmorEquipEvent
 import cf.wayzer.SuperItem.features.Effect
 import cf.wayzer.SuperItem.features.Effect.Companion.Long_Time
 import cf.wayzer.SuperItem.features.ItemInfo
+import cf.wayzer.SuperItem.features.Permission
 import org.bukkit.*
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -40,7 +41,7 @@ class EnderChestplate : Item() {
 
     @EventHandler
     fun onPlayerEquipChange(e: ArmorEquipEvent) {
-        if (isItem(e.newArmorPiece) && permission.hasPermission(e.player)) {
+        if (isItem(e.newArmorPiece) && get<Permission>().hasPermission(e.player)) {
             lock.writeLock().lock()
             polling.add(e.player)
             lock.writeLock().unlock()
@@ -56,7 +57,7 @@ class EnderChestplate : Item() {
 
     @EventHandler
     fun onPlayerTryToTeleport(e: PlayerInteractEvent) {
-        if (isItem(e.player.inventory.chestplate) && permission.hasPermission(e.player)) {
+        if (isItem(e.player.inventory.chestplate) && get<Permission>().hasPermission(e.player)) {
             if ((e.action == Action.RIGHT_CLICK_AIR
                             || e.action == Action.RIGHT_CLICK_BLOCK)
                     && isHoldingCorrectItem(e.player.inventory.itemInMainHand)) {
@@ -67,7 +68,7 @@ class EnderChestplate : Item() {
 
     @EventHandler
     fun onPlayerTryToTeleport(e: PlayerInteractEntityEvent) {
-        if (isItem(e.player.inventory.chestplate) && permission.hasPermission(e.player)) {
+        if (isItem(e.player.inventory.chestplate) && get<Permission>().hasPermission(e.player)) {
             if (isHoldingCorrectItem(e.player.inventory.itemInMainHand)) {
                 teleport(e.player)
             }

@@ -1,6 +1,7 @@
 import cf.wayzer.SuperItem.Item
 import cf.wayzer.SuperItem.features.Effect
 import cf.wayzer.SuperItem.features.ItemInfo
+import cf.wayzer.SuperItem.features.Permission
 import cf.wayzer.SuperItem.features.Recipe
 import org.bukkit.Color
 import org.bukkit.Material
@@ -34,7 +35,7 @@ class Slime_Boot : Item() {
     fun onShift(e: PlayerToggleSneakEvent) {
         val p = e.player
         if (e.isSneaking) {
-            if (isItem(p.inventory.boots) && permission.hasPermission(p)) {
+            if (isItem(p.inventory.boots) && get<Permission>().hasPermission(p)) {
                 effect.setEffect(p, 0)
             }
         } else if (effect.hasLongTimeEffect(p, 0)) {
@@ -46,7 +47,7 @@ class Slime_Boot : Item() {
     fun onSprint(e: PlayerToggleSprintEvent) {
         val p = e.player
         if (e.isSprinting) {
-            if (isItem(p.inventory.boots) && permission.hasPermission(p)) {
+            if (isItem(p.inventory.boots) && get<Permission>().hasPermission(p)) {
                 effect.setEffect(p, 1)
             }
         } else if (effect.hasLongTimeEffect(p, 1)) {
@@ -60,7 +61,7 @@ class Slime_Boot : Item() {
             val p = e.entity as Player
             for (item in p.inventory.armorContents) {
                 if (isItem(item)) {
-                    if (permission.hasPermission(p)) {
+                    if (get<Permission>().hasPermission(p)) {
                         e.damage = e.damage * 4 / 5
                     }
                     return
@@ -76,7 +77,7 @@ class Slime_Boot : Item() {
                 val p = e.entity as Player
                 for (item in p.inventory.armorContents) {
                     if (isItem(item)) {
-                        if (permission.hasPermission(p)) {
+                        if (get<Permission>().hasPermission(p)) {
                             e.isCancelled = true
                         }
                         return
