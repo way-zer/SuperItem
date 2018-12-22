@@ -1,6 +1,3 @@
-
-//copy from MCPlugins
-
 buildscript {
     ext{
         Bkotlin_version = '1.3.10'
@@ -23,19 +20,11 @@ allprojects{
         kotlin_version ="$Bkotlin_version"
         mc_version = '1.12-R0.1-SNAPSHOT'
         bc_version ='1.12-SNAPSHOT'
-        papi_version='2.8.2'
     }
     apply plugin: 'java'
     apply plugin: 'kotlin'
-    apply plugin: 'com.github.johnrengelman.shadow'
 
     sourceCompatibility = 1.8
-    compileKotlin {
-        kotlinOptions.jvmTarget = "1.8"
-    }
-    compileTestKotlin {
-        kotlinOptions.jvmTarget = "1.8"
-    }
 
     repositories {
         mavenCentral()
@@ -47,31 +36,14 @@ allprojects{
         }
     }
     dependencies {
-        compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-        testCompile group: 'junit', name: 'junit', version: '4.12'
+        compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"\
     }
-    shadowJar {
-        dependencies{
-            exclude dependency(":kotlin.*")
-        }
-    }
-    processResources{
-        filesMatching(["plugin.yml","bungee.yml"]){
-            filter{
-                it.replace("@version@", project.version.toString())
-            }
-        }
-    }
-    task buildArtifact(type: Copy){
-        dependsOn shadowJar
-        from jar.destinationDir
-        into "$rootProject.rootDir/artifacts/"
-    }
-    artifacts {
-        buildArtifact
-    }
-    tasks.withType(JavaCompile) {
-        options.encoding = "UTF-8"
+}
+
+apply plugin: 'com.github.johnrengelman.shadow'
+shadowJar {
+    dependencies{
+        exclude dependency(":kotlin.*")
     }
 }
 
@@ -84,14 +56,29 @@ dependencies{
     compileOnly files("$rootDir/lib/PowerNBT.jar")
 //    compile "me.dpohvar.powernbt:PowerNBT:0.8.9.2"
 }
-version="1.1"
-def items = subprojects[0]
+version="1.2"
+processResources{
+    filesMatching(["plugin.yml","bungee.yml"]){
+        filter{
+            it.replace("@version@", project.version.toString())
+        }
+    }
+}
+def items = subprojects[0] as Project
 task buildArtifact(type: Zip, overwrite:true){
     dependsOn items.getTasksByName("classes",false)
     dependsOn jar
+    from(file(items.buildDir.path+"/classes/kotlin/")){
+        includeEmptyDirs = false
+        include "**/*.class"
+        into("items")
+    }
     from(jar.archivePath){
         rename {"SuperItem.jar"}
     }
     archiveName ="SuperItem-${project.version}.zip"
     destinationDir =file("$rootDir/artifacts/")
+}
+artifacts {
+    buildArtifact
 }
