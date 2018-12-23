@@ -1,10 +1,10 @@
 package cf.wayzer.SuperItem
 
+import cf.wayzer.SuperItem.Item.Companion.require
 import cf.wayzer.SuperItem.Main.Companion.main
 import cf.wayzer.SuperItem.features.NBT
 import cf.wayzer.SuperItem.features.Permission
 import cf.wayzer.SuperItem.features.Texture
-import cf.wayzer.SuperItem.Item.Companion.require
 import com.google.gson.JsonObject
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
@@ -16,6 +16,7 @@ import java.util.logging.Level
 object ItemManager {
     private val logger = main.logger
     private val items = HashMap<String, Item>()
+    private lateinit var ucl:URLClassLoader
     private lateinit var config: JsonObject
 
     /**
@@ -28,21 +29,33 @@ object ItemManager {
         val dir = File(Main.main.dataFolder, "items")
         if (!dir.exists())
             dir.mkdirs()
-        val ucl = URLClassLoader.newInstance(arrayOf(dir.toURI().toURL()),
+        ucl = URLClassLoader.newInstance(arrayOf(dir.toURI().toURL()),
                 ItemManager::class.java.classLoader)
-        dir.listFiles { _, name -> name.endsWith(".class") && !name.contains("$") }.forEach {
-            val name = it.name.split("\\.".toRegex())[0]
-            try {
-                val c = ucl.loadClass(name)
-                if (c.superclass == Item::class.java) {
-                    val item = c.getConstructor().newInstance() as Item
-                    registerItem0(item)
+        loadDir(dir,"")
+        Main.main.saveConfig()
+    }
+
+    private fun loadDir(dir:File,prefix:String){
+        dir.listFiles().forEach {
+            if(it.isDirectory){
+                if("lib" != it.name)
+                loadDir(it,prefix+"."+it.name)
+            }
+            else {
+                if(!it.name.endsWith(".class")||it.name.contains("$"))
+                    return@forEach
+                val name = it.name.split("\\.".toRegex())[0]
+                try {
+                    val c = ucl.loadClass("$prefix.$name")
+                    if (c.superclass == Item::class.java) {
+                        val item = c.getConstructor().newInstance() as Item
+                        registerItem0(item)
+                    }
+                } catch (e: Exception) {
+                    logger.log(Level.SEVERE, "注册物品失败: $name", e)
                 }
-            } catch (e: Exception) {
-                logger.log(Level.SEVERE, "注册物品失败: $name", e)
             }
         }
-        Main.main.saveConfig()
     }
 
     /**
