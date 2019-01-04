@@ -12,13 +12,11 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.potion.PotionEffectType
 
 class Damascus_knife : Item() {
-    lateinit var effect: Effect
-
     override fun loadFeatures() {
         require(ItemInfo(Material.IRON_SWORD, "§3大马士革刀",
                 listOf("§b§o特殊的冶炼方式", "§b§o让大马士革刀的纹路中", "§b§o含有一种奇特的化学物质", "§b§o小小的砍伤足以致人死地")))
         require(Recipe("2@0;0;265;0;265;265;280;42;0"))
-        effect = require(Effect(
+        require(Effect(
                 Effect.EffectData(PotionEffectType.POISON, 300)
         ))
     }
@@ -30,7 +28,7 @@ class Damascus_knife : Item() {
             val p = e.damager as Player
             if (isItem(p.inventory.itemInMainHand) && get<Permission>().hasPermission(p)) {
                 if (!e.entity.isDead) {
-                    effect.setEffect(e.entity as LivingEntity)
+                    get<Effect>().setEffect(e.entity as LivingEntity)
                 }
             }
         }

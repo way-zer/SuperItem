@@ -1,19 +1,18 @@
 # Superitem
-An extensible custom item minecraft plugin
-* written in Kotlin(Support Java)
-* every item is a class file(runtime load)
-* can write custom item feature
-* every item has Automatically generated detailed configuration(from name to potion effect)
-## For Chinese
-see README.zh.md
-## License
-you should leave link to [this](https://github.com/way-zer/SuperItem/) and keep the author name in command help  
-feel free to fork and pull requests
-## How to write an item
+一个容易扩展的MC(我的世界)插件
+* 使用Kotlin编写(支持Java)
+* 每个物品都是一个独立的class文件(运行时加载)
+* 可以自己编写Feature(见下方说明)
+* 每个物品都可以自动生成详细的配置文件(从名字到药水效果,取决于Feature)
+
+## 授权
+保留[本站](https://github.com/way-zer/SuperItem/)链接并保留指令帮助页的作者信息  
+欢迎fork并提出pull请求,有任何疑问请提出issue
+## 怎样写一个item
 ```kotlin
     package cf.wayzer.example
     
-    //for full see items/src/main/kotin/Damascus_knife
+    //更多例子,看 items/src/main/kotin/
     class Damascus_knife : Item() {
         lateinit var effect: Effect
     
@@ -41,17 +40,17 @@ feel free to fork and pull requests
     }
 
 ```
-1. create an class extends *Item*
-2. override function loadFeatures():  
-    in this function,you should require features you need(Permission and Texture is default required)
-3. Item is *Listener*,which means you can write your eventHandler
+1. 继承Item类
+2. 覆写函数loadFeatures():  
+    这个函数中,应当require所有你需要的Feature(Permission和Texture默认require)
+3. Item 也是个 *Listener*,你可以编写任何你需要的事件处理器
 
-## How to write custom Feature
-### What is a *Feature*
-* Feature can use for a kind of feature.(custom Recipe,custom Durability or so on)
-* Feature is a bridge of Item and configuration
-### Example
-if it isn't *Item*,you should put it into Package *lib* 
+## 这样编写自定义 Feature
+### 什么是 *Feature*
+* Feature 能够实现一类功能(自定义配方,自定义耐久度等)
+* Feature 是Item和*配置文件*的桥梁(Feature的data)
+### 例子
+> 如果不是 *Item*,你应该放在包*lib*中 
 ```kotlin
 package cf.wayzer.example.lib
 
@@ -59,7 +58,7 @@ class Durability(override val defaultData: Int) : Feature<Int>(), Feature.HasLis
     override val listener: Listener
         get() = mListener
 
-    //Feature custom function(API)
+    //Feature 给Item提供的函数
     fun setDurability(item: ItemStack, now: Int = data) {}
 
     fun getDurability(item: ItemStack): Int {}
@@ -76,11 +75,12 @@ class Durability(override val defaultData: Int) : Feature<Int>(), Feature.HasLis
     }
 }
 ```
-#### About *defaultData*
-you can use either primary type or custom class.
-you can return it build by class parameters
+#### 关于 *defaultData*
+* 可用基本类型,也可以使用class
+* 用于生成配置文件,读取配置文件请使用data变量
+* 你可以使用Feature的构造参数来构造它
 
-#### Other
-* If you need listen event,you can implement *HasListener*
-* If you need other feature,you can implement *onPostLoad*
-* If you need handle disableEvent(such as clearing potion effect),you can implement *OnDisable*
+#### 其他
+* 如果需要处理事件(Event),你应该实现(implement)接口*HasListener*
+* 如果依赖其他Feature,你应该实现(implement)接口*onPostLoad*(在所有Feature加载完后调用)
+* 如果需要在*插件关闭前*处理数据(例如,清理药水效果),你应该实现(implement)接口 *OnDisable*
