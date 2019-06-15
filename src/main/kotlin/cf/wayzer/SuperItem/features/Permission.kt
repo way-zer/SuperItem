@@ -2,9 +2,7 @@ package cf.wayzer.SuperItem.features
 
 import cf.wayzer.SuperItem.Feature
 import cf.wayzer.SuperItem.Item
-import cf.wayzer.SuperItem.Item.Companion.isItem
 import cf.wayzer.SuperItem.ItemManager
-import cf.wayzer.SuperItem.Main
 import cf.wayzer.util.BarUtil
 import org.bukkit.block.Block
 import org.bukkit.entity.Entity

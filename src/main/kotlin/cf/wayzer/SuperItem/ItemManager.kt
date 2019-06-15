@@ -1,6 +1,5 @@
 package cf.wayzer.SuperItem
 
-import cf.wayzer.SuperItem.Item.Companion.require
 import cf.wayzer.SuperItem.Main.Companion.main
 import cf.wayzer.SuperItem.features.NBT
 import cf.wayzer.SuperItem.features.Permission
@@ -12,6 +11,7 @@ import java.io.File
 import java.net.URLClassLoader
 import java.util.*
 import java.util.logging.Level
+import kotlin.script.experimental.api.*
 
 object ItemManager {
     private val logger = main.logger
@@ -36,23 +36,46 @@ object ItemManager {
     }
 
     private fun loadDir(dir:File,prefix:String){
-        dir.listFiles().forEach {
-            if(it.isDirectory){
-                if("lib" != it.name)
-                loadDir(it,prefix+"."+it.name)
+        dir.listFiles().forEach { file ->
+            if(file.isDirectory){
+                if("lib" != file.name)
+                loadDir(file,prefix+"."+file.name)
             }
             else {
-                if(!it.name.endsWith(".class")||it.name.contains("$"))
-                    return@forEach
-                val name = it.name.split("\\.".toRegex())[0]
                 try {
-                    val c = ucl.loadClass("$prefix.$name")
-                    if (c.superclass == Item::class.java) {
-                        val item = c.getConstructor().newInstance() as Item
+                    val item:Item
+                    if(file.name.endsWith("superitem.kts")){
+                        val result = ScriptSupporter.loadFile(file)
+                        result.onSuccess {
+                            val res = result.resultOrNull()!!.returnValue
+                            if(res is ResultValue.Value && res.value is ScriptSupporter.SuperItemScript) {
+                                (res.value as ScriptSupporter.SuperItemScript).register()
+                                result.reports.forEachIndexed { index, rep ->
+                                    logger.log(Level.WARNING,"##$index##"+rep.message,rep.exception)
+                                }
+                                return@onSuccess ResultWithDiagnostics.Success(ResultValue.Unit)
+                            } else {
+                                return@onSuccess ResultWithDiagnostics.Failure(ScriptDiagnostic("非物品Kts: ${file.name}"))
+                            }
+                        }.onFailure {
+                            logger.warning("物品Kts加载失败: ")
+                            it.reports.forEachIndexed { index, rep ->
+                                logger.log(Level.WARNING,"##$index##"+rep.message,rep.exception)
+                            }
+                        }
+//                            logger.warning("非物品Kts: ${file.name}")
+                    }else if (file.name.endsWith(".class")&&!file.name.contains("$")){
+                        val name = file.nameWithoutExtension
+                        val c = ucl.loadClass("$prefix.$name")
+                        if (c.superclass != Item::class.java) {
+                            logger.warning("非物品Class: ${file.name}")
+                            return
+                        }
+                        item = c.getConstructor().newInstance() as Item
                         registerItem0(item)
                     }
                 } catch (e: Exception) {
-                    logger.log(Level.SEVERE, "注册物品失败: $name", e)
+                    logger.log(Level.SEVERE, "注册物品失败: ${file.nameWithoutExtension}", e)
                 }
             }
         }
@@ -66,10 +89,19 @@ object ItemManager {
         Main.main.saveConfig()
     }
 
+    /**
+     * 注册物品,可以从其他插件注册,使用DSL
+     */
+    fun registerItem(name:String,body: Item.Builder.()->Unit) {
+        val builder = Item.Builder(name.toUpperCase())
+        body(builder)
+        builder.register()
+    }
+
     private var cs: JsonObject? = null
 
     private fun registerItem0(item: Item) {
-        val classname = item.javaClass.simpleName
+        val classname = item.name
         cs = if (config.has(classname))
             config.getAsJsonObject(classname)
         else {
@@ -84,7 +116,7 @@ object ItemManager {
         postLoads.forEach { it.onPostLoad(main) }
 
         cs = null
-        Main.main.server.pluginManager.registerEvents(item, Main.main)
+        main.server.pluginManager.registerEvents(item, main)
         items[classname] = item
         logger.info("注册物品成功: $classname")
     }
@@ -107,7 +139,7 @@ object ItemManager {
             postLoads.add(feature)
         }
         if (feature is Feature.HasListener) {
-            Main.main.server.pluginManager.registerEvents(feature.listener, Main.main)
+            Main.main.server.pluginManager.registerEvents(feature.listener, main)
         }
         if (feature is Feature.OnDisable) {
             Main.main.addDisableListener(feature)

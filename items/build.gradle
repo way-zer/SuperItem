@@ -1,5 +1,12 @@
+plugins{
+    id 'java'
+    id 'org.jetbrains.kotlin.jvm'
+}
 dependencies {
-    compileOnly parent
+    implementation(parent){
+        exclude module:"kotlin-script-util"
+        exclude module:"kotlin-scripting-jvm-host"
+    }
     compileOnly "org.spigotmc:spigot-api:$mc_version"
 }
 
