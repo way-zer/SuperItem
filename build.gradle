@@ -54,9 +54,7 @@ task buildArtifact(type: Zip){
         include "**/*.class"
         into("items")
     }
-    from(jar.destinationDir){
-        rename {"SuperItem.jar"}
-    }
+    from(jar.destinationDir)
     archiveName ="SuperItem-${project.version}.zip"
     destinationDir =file("$rootDir/artifacts/")
 }

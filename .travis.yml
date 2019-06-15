@@ -1,0 +1,16 @@
+language: java
+before_install:
+  - echo -e "machine github.com\n  login $GITHUB_TOKEN" > ~/.netrc
+  - git lfs pull
+script:
+  - ./gradlew buildArtifact
+deploy:
+  provider: releases
+  api_key: "$GITHUB_TOKEN"
+  file_glob: true
+  file:
+    - artifacts/SuperItem-*.zip
+    - build/libs/SuperItem*
+  skip_cleanup: true
+  on:
+    tags: true
