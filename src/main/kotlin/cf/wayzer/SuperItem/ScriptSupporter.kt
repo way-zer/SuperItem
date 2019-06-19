@@ -1,5 +1,6 @@
 package cf.wayzer.SuperItem
 
+import org.bukkit.Bukkit
 import java.io.File
 import kotlin.script.experimental.annotations.KotlinScript
 import kotlin.script.experimental.api.*
@@ -13,6 +14,7 @@ import kotlin.script.experimental.jvmhost.jvm
 object ScriptSupporter {
     object Configuration:ScriptCompilationConfiguration({
         classpathFromClassloader(ScriptSupporter::class.java.classLoader)
+        classpathFromClassloader(Bukkit::class.java.classLoader)
         defaultImports(Item::class)
         defaultImports("cf.wayzer.SuperItem.features.*")
     })

@@ -66,7 +66,7 @@ object ItemManager {
 //                            logger.warning("非物品Kts: ${file.name}")
                     }else if (file.name.endsWith(".class")&&!file.name.contains("$")){
                         val name = file.nameWithoutExtension
-                        val c = ucl.loadClass("$prefix.$name")
+                        val c = ucl.loadClass("$prefix.$name".substring(1))
                         if (c.superclass != Item::class.java) {
                             logger.warning("非物品Class: ${file.name}")
                             return
