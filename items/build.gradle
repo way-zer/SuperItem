@@ -3,10 +3,8 @@ plugins{
     id 'org.jetbrains.kotlin.jvm'
 }
 dependencies {
-    implementation(parent){
-        exclude module:"kotlin-script-util"
-        exclude module:"kotlin-scripting-jvm-host"
-    }
+    implementation(parent){transitive=false}
+    compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     compileOnly "org.spigotmc:spigot-api:$mc_version"
 }
 

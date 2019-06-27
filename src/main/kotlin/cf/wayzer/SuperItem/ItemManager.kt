@@ -3,8 +3,6 @@ package cf.wayzer.SuperItem
 import cf.wayzer.SuperItem.Main.Companion.main
 import cf.wayzer.SuperItem.features.NBT
 import cf.wayzer.SuperItem.features.Permission
-import cf.wayzer.SuperItem.features.Texture
-import com.google.gson.JsonObject
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import java.io.File
@@ -17,15 +15,13 @@ object ItemManager {
     private val logger = main.logger
     private val items = HashMap<String, Item>()
     private lateinit var ucl:URLClassLoader
-    private lateinit var config: JsonObject
 
     /**
      * 从文件夹加载Item
      * 供Main使用
      */
     @Throws(Exception::class)
-    fun load(config: JsonObject) {
-        ItemManager.config = config
+    fun load() {
         val dir = File(Main.main.dataFolder, "items")
         if (!dir.exists())
             dir.mkdirs()
@@ -36,7 +32,7 @@ object ItemManager {
     }
 
     private fun loadDir(dir:File,prefix:String){
-        dir.listFiles().forEach { file ->
+        dir.listFiles()?.forEach { file ->
             if(file.isDirectory){
                 if("lib" != file.name)
                 loadDir(file,prefix+"."+file.name)
@@ -86,65 +82,35 @@ object ItemManager {
      */
     fun registerItem(item: Item) {
         registerItem0(item)
-        Main.main.saveConfig()
+        ConfigManager.saveForItem(item)
     }
 
     /**
      * 注册物品,可以从其他插件注册,使用DSL
      */
-    fun registerItem(name:String,body: Item.Builder.()->Unit) {
+    @Suppress("unused")
+    fun registerItem(name:String, body: Item.Builder.()->Unit) {
         val builder = Item.Builder(name.toUpperCase())
         body(builder)
         builder.register()
     }
 
-    private var cs: JsonObject? = null
-
     private fun registerItem0(item: Item) {
-        val classname = item.name
-        cs = if (config.has(classname))
-            config.getAsJsonObject(classname)
-        else {
-            val cf = JsonObject()
-            config.add(classname, cf)
-            cf
-        }
-        postLoads.clear()
         item.loadFeatures()
         item.require(Permission())
-        item.require(Texture())
-        postLoads.forEach { it.onPostLoad(main) }
-
-        cs = null
+        item.features.values.flatten().forEach {
+            if (it is Feature.OnPostLoad) {
+                it.onPostLoad(main)
+            }
+            if (it is Feature.HasListener) {
+                main.server.pluginManager.registerEvents(it.listener, main)
+            }
+            if (it is Feature.OnDisable) {
+                main.addDisableListener(it)
+            }
+        }
         main.server.pluginManager.registerEvents(item, main)
-        items[classname] = item
-        logger.info("注册物品成功: $classname")
-    }
-
-    private val postLoads : MutableList<Feature.OnPostLoad> = mutableListOf()
-    /**
-     * 请求Feature
-     * 仅供item.require()调用
-     */
-    fun <H:Any,T : Feature<out H>> Item.require0(feature: T): T {
-        feature.item = this
-        val name = feature::class.java.simpleName
-        if (!cs!!.has(name)) {
-            cs!!.add(name, main.gson.toJsonTree(feature.defaultData))
-        }
-        @Suppress("UNCHECKED_CAST")
-        (feature as Feature<H>).data = main.gson.fromJson(cs!![name], feature.defaultData::class.java)
-
-        if (feature is Feature.OnPostLoad) {
-            postLoads.add(feature)
-        }
-        if (feature is Feature.HasListener) {
-            Main.main.server.pluginManager.registerEvents(feature.listener, main)
-        }
-        if (feature is Feature.OnDisable) {
-            Main.main.addDisableListener(feature)
-        }
-        return feature
+        logger.info("注册物品成功: ${item.name}")
     }
 
     /**

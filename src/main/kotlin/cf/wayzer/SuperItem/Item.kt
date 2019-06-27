@@ -1,6 +1,5 @@
 package cf.wayzer.SuperItem
 
-import cf.wayzer.SuperItem.ItemManager.require0
 import cf.wayzer.SuperItem.features.CoolDown
 import cf.wayzer.SuperItem.features.ItemInfo
 import cf.wayzer.SuperItem.features.Permission
@@ -19,17 +18,9 @@ import java.util.*
  */
 abstract class Item : Listener {
     open class Builder(override val name:String):Item(){
-        val requireList = mutableListOf<Feature<out Any>>()
+        override fun loadFeatures() {}
 
-        override fun loadFeatures() {
-            requireList.forEach { super.require(it) }
-        }
-
-        override fun <T : Feature<out Any>> require(feature: T): T {
-            requireList.add(feature)
-            return feature
-        }
-
+        @Suppress("unused")
         inline fun <reified T:Event>listen(ignoreCancelled:Boolean=false, priority: EventPriority = EventPriority.NORMAL, crossinline handle:(T)->Unit){
             Bukkit.getServer().pluginManager.registerEvent(T::class.java,this,priority, { _, event -> handle(event as T) },pluginMain,ignoreCancelled)
         }
@@ -42,7 +33,8 @@ abstract class Item : Listener {
      * 获取默认物品
      */
     abstract fun loadFeatures()
-    private val features : MutableMap<Class<*>,MutableList<Feature<*>>> = mutableMapOf()
+
+    val features : MutableMap<Class<*>,MutableList<Feature<*>>> = mutableMapOf()
 
     @Deprecated("保证扩展和安全,请使用get,1.3版本弃用",ReplaceWith("get<ItemInfo>().itemStack"))
     val item
@@ -58,6 +50,9 @@ abstract class Item : Listener {
 
     open val name: String
         get() = javaClass.simpleName
+
+    open val packageName: String
+        get() = javaClass.`package`.name
 
 
     /**
@@ -105,10 +100,12 @@ abstract class Item : Listener {
 
     /**
      * 注册feature,可通过get使用
-     * @see ItemManager.require0
      */
-    open fun <T : Feature<out Any>> require(feature: T): T = require0(feature)
-    .let { features.getOrPut(it::class.java,::mutableListOf).add(it);it}
+    open fun <T : Feature<out Any>> require(feature: T): T{
+        ConfigManager.loadForFeature(this,feature)
+        features.getOrPut(feature::class.java,::mutableListOf).add(feature)
+        return feature
+    }
 
     companion object {
         /**
