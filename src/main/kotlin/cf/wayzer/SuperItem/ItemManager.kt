@@ -41,25 +41,27 @@ object ItemManager {
                 try {
                     val item:Item
                     if(file.name.endsWith("superitem.kts")){
-                        val result = ScriptSupporter.loadFile(file)
-                        result.onSuccess {
-                            val res = result.resultOrNull()!!.returnValue
-                            if(res is ResultValue.Value && res.value is ScriptSupporter.SuperItemScript) {
-                                (res.value as ScriptSupporter.SuperItemScript).register()
-                                result.reports.forEachIndexed { index, rep ->
+                        logger.info("Load Item in async: ${file.name}")
+                        run {
+                            val result = ScriptSupporter.loadFile(file)
+                            result.onSuccess {
+                                val res = result.resultOrNull()!!.returnValue
+                                if(res is ResultValue.Value && res.value is ScriptSupporter.SuperItemScript) {
+                                    (res.value as ScriptSupporter.SuperItemScript).register()
+                                    result.reports.forEachIndexed { index, rep ->
+                                        logger.log(Level.WARNING,"##$index##"+rep.message,rep.exception)
+                                    }
+                                    return@onSuccess ResultWithDiagnostics.Success(ResultValue.Unit)
+                                } else {
+                                    return@onSuccess ResultWithDiagnostics.Failure(ScriptDiagnostic("非物品Kts: ${file.name}"))
+                                }
+                            }.onFailure {
+                                logger.warning("物品Kts加载失败: ")
+                                it.reports.forEachIndexed { index, rep ->
                                     logger.log(Level.WARNING,"##$index##"+rep.message,rep.exception)
                                 }
-                                return@onSuccess ResultWithDiagnostics.Success(ResultValue.Unit)
-                            } else {
-                                return@onSuccess ResultWithDiagnostics.Failure(ScriptDiagnostic("非物品Kts: ${file.name}"))
-                            }
-                        }.onFailure {
-                            logger.warning("物品Kts加载失败: ")
-                            it.reports.forEachIndexed { index, rep ->
-                                logger.log(Level.WARNING,"##$index##"+rep.message,rep.exception)
                             }
                         }
-//                            logger.warning("非物品Kts: ${file.name}")
                     }else if (file.name.endsWith(".class")&&!file.name.contains("$")){
                         val name = file.nameWithoutExtension
                         val c = ucl.loadClass("$prefix.$name".substring(1))
@@ -89,8 +91,8 @@ object ItemManager {
      * 注册物品,可以从其他插件注册,使用DSL
      */
     @Suppress("unused")
-    fun registerItem(name:String, body: Item.Builder.()->Unit) {
-        val builder = Item.Builder(name.toUpperCase())
+    fun registerItem(packageName:String,name:String, body: Item.Builder.()->Unit) {
+        val builder = Item.Builder(packageName,name.toUpperCase())
         body(builder)
         builder.register()
     }

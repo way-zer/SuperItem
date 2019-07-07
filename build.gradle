@@ -32,14 +32,12 @@ dependencies{
     compile "org.jetbrains.kotlin:kotlin-script-util:$kotlin_version"
     compile "org.jetbrains.kotlin:kotlin-scripting-jvm-host:$kotlin_version"
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    compile "io.github.config4k:config4k:0.4.1"
     compileOnly "org.spigotmc:spigot-api:$mc_version"
     compileOnly "net.md-5:bungeecord-chat:$bc_version"
-    compileOnly "com.google.code.gson:gson:2.8.2"
     compileOnly files("$rootDir/lib/PowerNBT.jar")
 //    compile "me.dpohvar.powernbt:PowerNBT:0.8.9.2"
 }
-version="1.3.1"
+version="1.3.2"
 processResources{
     filesMatching(["plugin.yml","bungee.yml"]){
         filter{

@@ -17,7 +17,7 @@ import java.util.*
  * 继承后编译放到items目录下
  */
 abstract class Item : Listener {
-    open class Builder(override val name:String):Item(){
+    open class Builder(override val packageName: String,override val name:String):Item(){
         override fun loadFeatures() {}
 
         @Suppress("unused")
@@ -102,6 +102,7 @@ abstract class Item : Listener {
      * 注册feature,可通过get使用
      */
     open fun <T : Feature<out Any>> require(feature: T): T{
+        feature.item=this
         ConfigManager.loadForFeature(this,feature)
         features.getOrPut(feature::class.java,::mutableListOf).add(feature)
         return feature

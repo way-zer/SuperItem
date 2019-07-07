@@ -1,6 +1,6 @@
 name: SuperItem
 main: cf.wayzer.SuperItem.Main
-version: 1.0
+version: @version@
 author: Way__Zer
 description: description!
 commands: 
