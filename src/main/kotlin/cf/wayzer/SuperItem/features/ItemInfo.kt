@@ -45,9 +45,9 @@ class ItemInfo(
         loadOther(im, itemStack)
         itemStack.itemMeta = im
         val nbt = NBT.api.read(itemStack)
-        nbt["SICN"] = item::class.java.simpleName
+        nbt["SICN"] = item.name
         NBT.api.write(itemStack, nbt)
 
-        item.get<ItemInfo>().itemStack = itemStack
+        this.itemStack = itemStack
     }
 }

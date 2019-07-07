@@ -101,7 +101,7 @@ class Commander : CommandExecutor {
         val maxpages = (list.size - 1) / 10 + 1
         if (args.size > 1) {
             pages = try {
-                Integer.valueOf(args[1])!!
+                Integer.valueOf(args[1])
             } catch (e: Exception) {
                 1
             }
@@ -118,7 +118,7 @@ class Commander : CommandExecutor {
         var i = pages * 10 - 10
         while (i < list.size && i < pages * 10) {
             s.sendMessage(String.format("§e%03d §a|§e %-20s §a|§e %s",
-                    i, list[i]::class.java.simpleName, list[i].get<ItemInfo>().itemStack.itemMeta.displayName))
+                    i, list[i].name, list[i].get<ItemInfo>().itemStack.itemMeta.displayName))
             i++
         }
         s.sendMessage("§a================   §7$pages/$maxpages   §a================")

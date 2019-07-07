@@ -24,8 +24,6 @@ abstract class Feature<H> where H : Any {
         val listener: Listener
     }
 
-    interface Data
-
     /**
      * 绑定的Item
      */
@@ -35,4 +33,6 @@ abstract class Feature<H> where H : Any {
      * Feature的配置信息
      */
     lateinit var data: H
+    val name:String
+        get() = javaClass.simpleName
 }
