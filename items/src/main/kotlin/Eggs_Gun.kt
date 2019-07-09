@@ -4,9 +4,11 @@ import cf.wayzer.SuperItem.features.CoolDown
 import cf.wayzer.SuperItem.features.ItemInfo
 import cf.wayzer.SuperItem.features.Permission
 import cf.wayzer.util.BarUtil
+import org.bukkit.DyeColor
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.block.Block
+import org.bukkit.block.data.BlockData
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Monster
 import org.bukkit.entity.Player
@@ -20,28 +22,31 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.ProjectileHitEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.server.PluginDisableEvent
+import org.bukkit.material.Colorable
 import org.bukkit.scheduler.BukkitRunnable
 import java.util.*
 
 class Eggs_Gun : Item() {
 
-    private val types = setOf(Material.WOOL, Material.STAINED_GLASS, Material.STAINED_CLAY,
-            Material.STAINED_GLASS_PANE, Material.CARPET)
     private val blocks = HashSet<BlockInfo>()
     private val players = HashSet<Player>()
 
     private inner class BlockInfo(internal var block: Block) {
-        internal var old_data: Byte = 0
+        internal var old_color: DyeColor
         internal var time: Byte = 0
 
         init {
-            old_data = block.data
+            val data = block.blockData as Colorable
+            old_color = data.color?:DyeColor.WHITE
             time = 20
-            block.data = 14.toByte()
+            data.color = DyeColor.RED
+            block.blockData = data as BlockData
         }
 
         fun setback() {
-            block.data = old_data
+            val data = block.blockData as Colorable
+            data.color = old_color
+            block.blockData = data as BlockData
         }
     }
 
@@ -58,7 +63,8 @@ class Eggs_Gun : Item() {
     }
 
     override fun loadFeatures() {
-        require(ItemInfo(Material.IRON_BARDING, "§7雪球来复枪", listOf("§e§o这是一件好玩的并且值得炫耀的玩具!")))
+        @Suppress("DEPRECATION")
+        require(ItemInfo(Material.LEGACY_IRON_BARDING, "§7雪球来复枪", listOf("§e§o这是一件好玩的并且值得炫耀的玩具!")))
 
         require(CoolDown(100))
     }
@@ -105,9 +111,9 @@ class Eggs_Gun : Item() {
                 for (i1 in -1..1)
                     for (i11 in -1..1)
                         if (i == 0 || i1 == 0 || i11 == 0) {
-                            val b = loc.world.getBlockAt(loc.blockX + i, loc.blockY + i1,
+                            val b = loc.world!!.getBlockAt(loc.blockX + i, loc.blockY + i1,
                                     loc.blockZ + i11)
-                            if (types.contains(b.type) && b.data.toInt() != 14) {
+                            if(b.blockData is Colorable && (b.blockData as Colorable).color != DyeColor.RED){
                                 blocks.add(BlockInfo(b))
                             }
                         }
@@ -138,7 +144,7 @@ class Eggs_Gun : Item() {
 
     @EventHandler
     fun onBreak(e: BlockBreakEvent) {
-        if (types.contains(e.block.type) && e.block.data.toInt() == 14) {
+        if (e.block.blockData is Colorable && (e.block.blockData as Colorable).color == DyeColor.RED) {
             for (block in blocks) {
                 if (block.block.location == e.block.location) {
                     e.isCancelled = true

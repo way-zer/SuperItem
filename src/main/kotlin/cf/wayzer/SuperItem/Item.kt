@@ -85,7 +85,7 @@ abstract class Item : Listener {
             return false
         }
         inv.setItem(i, inv.itemInMainHand)
-        inv.itemInMainHand = get<ItemInfo>().itemStack.clone()
+        inv.setItemInMainHand(get<ItemInfo>().itemStack.clone())
         p.updateInventory()
         return true
     }
@@ -137,7 +137,7 @@ abstract class Item : Listener {
          * @param item 需要消耗的物品
          * @param setItem 设置消耗物(默认设置主手)
          */
-        fun Player.consumeItem(item: ItemStack, setItem: (PlayerInventory, ItemStack?) -> Unit = { a, b -> a.itemInMainHand = b }) {
+        fun Player.consumeItem(item: ItemStack, setItem: (PlayerInventory, ItemStack?) -> Unit = { a, b -> a.setItemInMainHand(b)}) {
             if (item.amount > 0) {
                 item.amount--
                 setItem(inventory, item)

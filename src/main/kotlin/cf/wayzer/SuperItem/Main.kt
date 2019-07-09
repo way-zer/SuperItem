@@ -10,7 +10,7 @@ class Main : JavaPlugin() {
             ConfigManager.init(dataFolder)
             ItemManager.load()
             ConfigManager.saveAll()
-            getCommand("SuperItem").executor = Commander()
+            getCommand("SuperItem")?.setExecutor(Commander())
         } catch (e: Exception) {
             logger.log(Level.SEVERE, "发生严重错误,请关闭此插件,并与作者联系", e)
         }

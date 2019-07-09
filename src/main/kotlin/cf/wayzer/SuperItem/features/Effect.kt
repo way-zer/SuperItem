@@ -7,9 +7,9 @@ import com.google.gson.annotations.JsonAdapter
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonToken
 import com.google.gson.stream.JsonWriter
-import org.bukkit.Color
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
+import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.potion.PotionEffect
@@ -45,7 +45,7 @@ class Effect(override vararg val defaultData: EffectData) : Feature<Array<out Ef
             val strong: Int = 0,
             val isAmbient: Boolean = false,
             val hasParticles: Boolean = false,
-            val color: Color? = null
+            val icon: Boolean = true
     )
 
     private val players = List(defaultData.size) {
@@ -61,7 +61,7 @@ class Effect(override vararg val defaultData: EffectData) : Feature<Array<out Ef
      */
     fun setEffect(entity: LivingEntity, index: Int = 0) {
         val effect = data[index]
-        val potionEffect = PotionEffect(effect.type, effect.time, effect.strong, effect.isAmbient, effect.hasParticles, effect.color)
+        val potionEffect = PotionEffect(effect.type, effect.time, effect.strong, effect.isAmbient, effect.hasParticles, effect.icon)
         if (entity.addPotionEffect(potionEffect, true)) {
             if (effect.time >= Long_Time && entity is Player)
                 players[index].add(entity)
@@ -94,6 +94,7 @@ class Effect(override vararg val defaultData: EffectData) : Feature<Array<out Ef
         }
     }
 
+    @EventHandler
     fun onQuit(e: PlayerQuitEvent) {
         players.forEachIndexed { index, mutableSet ->
             if (mutableSet.contains(e.player)) {

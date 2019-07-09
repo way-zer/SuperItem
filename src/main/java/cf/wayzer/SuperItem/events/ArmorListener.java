@@ -1,9 +1,7 @@
 package cf.wayzer.SuperItem.events;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
@@ -61,7 +59,7 @@ public class ArmorListener implements Listener {
                 if (e.getRawSlot() == newArmorType.getSlot()) {
                     equipping = false;
                 }
-                if (newArmorType.equals(ArmorType.HELMET) && (equipping ? e.getWhoClicked().getInventory().getHelmet() == null : e.getWhoClicked().getInventory().getHelmet() != null) || newArmorType.equals(ArmorType.CHESTPLATE) && (equipping ? e.getWhoClicked().getInventory().getChestplate() == null : e.getWhoClicked().getInventory().getChestplate() != null) || newArmorType.equals(ArmorType.LEGGINGS) && (equipping ? e.getWhoClicked().getInventory().getLeggings() == null : e.getWhoClicked().getInventory().getLeggings() != null) || newArmorType.equals(ArmorType.BOOTS) && (equipping ? e.getWhoClicked().getInventory().getBoots() == null : e.getWhoClicked().getInventory().getBoots() != null)) {
+                if (newArmorType.equals(ArmorType.HELMET) && (equipping == (e.getWhoClicked().getInventory().getHelmet() == null)) || newArmorType.equals(ArmorType.CHESTPLATE) && (equipping == (e.getWhoClicked().getInventory().getChestplate() == null)) || newArmorType.equals(ArmorType.LEGGINGS) && (equipping == (e.getWhoClicked().getInventory().getLeggings() == null)) || newArmorType.equals(ArmorType.BOOTS) && (equipping == (e.getWhoClicked().getInventory().getBoots() == null))) {
                     ArmorEquipEvent armorEquipEvent = new ArmorEquipEvent((Player) e.getWhoClicked(), ArmorEquipEvent.EquipMethod.SHIFT_CLICK, newArmorType, equipping ? null : e.getCurrentItem(), equipping ? e.getCurrentItem() : null);
                     Bukkit.getServer().getPluginManager().callEvent(armorEquipEvent);
                     if (armorEquipEvent.isCancelled()) {
@@ -190,6 +188,7 @@ public class ArmorListener implements Listener {
             if (armorEquipEvent.isCancelled()) {
                 ItemStack i = e.getBrokenItem().clone();
                 i.setAmount(1);
+                //noinspection deprecation
                 i.setDurability((short) (i.getDurability() - 1));
                 if (type.equals(ArmorType.HELMET)) {
                     p.getInventory().setHelmet(i);
@@ -213,10 +212,5 @@ public class ArmorListener implements Listener {
                 // No way to cancel a death event.
             }
         }
-    }
-
-    private Location shift(Location start, BlockFace direction, int multiplier) {
-        if (multiplier == 0) return start;
-        return new Location(start.getWorld(), start.getX() + direction.getModX() * multiplier, start.getY() + direction.getModY() * multiplier, start.getZ() + direction.getModZ() * multiplier);
     }
 }

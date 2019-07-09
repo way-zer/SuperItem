@@ -55,7 +55,7 @@ class Durability(override val defaultData: Int) : Feature<Int>(), Feature.HasLis
                     } else {
                         nbt["SICD"] = cur
                         NBT.api.write(e.item, nbt)
-                        cur = ((max.toDouble()) / cur * e.item.data.itemType.maxDurability).toInt()
+                        cur = ((max.toDouble()) / cur * e.item.type.maxDurability).toInt()
                         e.damage = e.item.durability - cur
                     }
                 }
