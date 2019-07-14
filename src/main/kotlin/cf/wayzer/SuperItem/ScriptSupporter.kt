@@ -16,6 +16,8 @@ import kotlin.script.experimental.jvmhost.createJvmCompilationConfigurationFromT
 import kotlin.script.experimental.jvmhost.jvm
 
 object ScriptSupporter {
+    @Target(AnnotationTarget.FILE)
+    annotation class PluginDependency(val classToFind:String)
     private fun JvmScriptCompilationConfigurationBuilder.dependenciesFromClass(classLoader: ClassLoader,vararg classes:KClass<out Any>) {
         classes.flatMap {c->
             classpathFromClass(classLoader,c)?:let {
@@ -29,8 +31,20 @@ object ScriptSupporter {
         jvm{
             dependenciesFromClass(javaClass.classLoader,Bukkit::class,Item::class)
         }
-        defaultImports(Item::class)
+        defaultImports(Item::class,PluginDependency::class)
         defaultImports.append("cf.wayzer.SuperItem.features.*")
+        refineConfiguration{
+            onAnnotations(PluginDependency::class){context->
+                val annotations = context.collectedData?.get(ScriptCollectedData.foundAnnotations)?.filter { it.annotationClass==PluginDependency::class }?: listOf()
+                val classes = annotations.map { Class.forName((it as PluginDependency).classToFind).kotlin}
+                val diagnostics = classes.map { ScriptDiagnostic("[Info]PluginDependency: ${it.java.name}") }
+                ScriptCompilationConfiguration(context.compilationConfiguration) {
+                    jvm{
+                        dependenciesFromClass(ScriptSupporter::class.java.classLoader, *classes.toTypedArray())
+                    }
+                }.asSuccess(diagnostics)
+            }
+        }
     })
     @KotlinScript(
             displayName = "SuperItem Kotlin Script",
