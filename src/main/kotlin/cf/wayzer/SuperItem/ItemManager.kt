@@ -15,6 +15,7 @@ object ItemManager {
     private val logger = main.logger
     private val items = HashMap<String, Item>()
     private lateinit var ucl:URLClassLoader
+    lateinit var rootDir:File
 
     /**
      * 从文件夹加载Item
@@ -22,12 +23,12 @@ object ItemManager {
      */
     @Throws(Exception::class)
     fun load() {
-        val dir = File(Main.main.dataFolder, "items")
-        if (!dir.exists())
-            dir.mkdirs()
-        ucl = URLClassLoader.newInstance(arrayOf(dir.toURI().toURL()),
+        rootDir = File(Main.main.dataFolder, "items")
+        if (!rootDir.exists())
+            rootDir.mkdirs()
+        ucl = URLClassLoader.newInstance(arrayOf(rootDir.toURI().toURL()),
                 ItemManager::class.java.classLoader)
-        loadDir(dir,"")
+        loadDir(rootDir,"")
         Main.main.saveConfig()
     }
 
@@ -39,44 +40,52 @@ object ItemManager {
             }
             else {
                 try {
-                    val item:Item
-                    if(file.name.endsWith("superitem.kts")){
-                        logger.info("Load Item in async: ${file.name}")
-                        run {
-                            val result = ScriptSupporter.loadFile(file)
-                            result.onSuccess {
-                                val res = result.resultOrNull()!!.returnValue
-                                if(res is ResultValue.Value && res.value is ScriptSupporter.SuperItemScript) {
-                                    (res.value as ScriptSupporter.SuperItemScript).register()
-                                    result.reports.forEachIndexed { index, rep ->
-                                        logger.log(Level.WARNING,"##$index##"+rep.message,rep.exception)
-                                    }
-                                    return@onSuccess ResultWithDiagnostics.Success(ResultValue.Unit)
-                                } else {
-                                    return@onSuccess ResultWithDiagnostics.Failure(ScriptDiagnostic("非物品Kts: ${file.name}"))
-                                }
-                            }.onFailure {
-                                logger.warning("物品Kts加载失败: ")
-                                it.reports.forEachIndexed { index, rep ->
-                                    logger.log(Level.WARNING,"##$index##"+rep.message,rep.exception)
-                                }
-                            }
-                        }
-                    }else if (file.name.endsWith(".class")&&!file.name.contains("$")){
-                        val name = file.nameWithoutExtension
-                        val c = ucl.loadClass("$prefix.$name".substring(1))
-                        if (c.superclass != Item::class.java) {
-                            logger.warning("非物品Class: ${file.name}")
-                            return
-                        }
-                        item = c.getConstructor().newInstance() as Item
-                        registerItem0(item)
-                    }
+                    val name = file.nameWithoutExtension
+                    loadFile(file,"$prefix.$name".substring(1))?.let { ItemManager::registerItem0 }
                 } catch (e: Exception) {
                     logger.log(Level.SEVERE, "注册物品失败: ${file.nameWithoutExtension}", e)
                 }
             }
         }
+    }
+
+    /**
+     * 供插件内部使用
+     */
+    @Throws(Exception::class)
+    fun loadFile(file: File,className: String):Item?{
+        var item:Item? = null
+        if(file.name.endsWith("superitem.kts")){
+            logger.info("Load Item in async: ${file.name}")
+            run {
+                val result = ScriptSupporter.loadFile(file)
+                result.onSuccess {
+                    val res = result.resultOrNull()!!.returnValue
+                    if(res is ResultValue.Value && res.value is ScriptSupporter.SuperItemScript) {
+                        item = (res.value as ScriptSupporter.SuperItemScript)
+                        result.reports.forEachIndexed { index, rep ->
+                            logger.log(Level.WARNING,"##$index##"+rep.message,rep.exception)
+                        }
+                        return@onSuccess ResultWithDiagnostics.Success(ResultValue.Unit)
+                    } else {
+                        return@onSuccess ResultWithDiagnostics.Failure(ScriptDiagnostic("非物品Kts: ${file.name}"))
+                    }
+                }.onFailure {
+                    logger.warning("物品Kts加载失败: ")
+                    it.reports.forEachIndexed { index, rep ->
+                        logger.log(Level.WARNING,"##$index##"+rep.message,rep.exception)
+                    }
+                }
+            }
+        }else if (file.name.endsWith(".class")&&!file.name.contains("$")){
+            val c = ucl.loadClass(className)
+            if (c.superclass != Item::class.java) {
+                logger.warning("非物品Class: ${file.name}")
+                return null
+            }
+            return c.getConstructor().newInstance() as Item
+        }
+        return item
     }
 
     /**
@@ -107,12 +116,18 @@ object ItemManager {
             if (it is Feature.HasListener) {
                 main.server.pluginManager.registerEvents(it.listener, main)
             }
-            if (it is Feature.OnDisable) {
-                main.addDisableListener(it)
-            }
         }
+        items[item.name] = item
         main.server.pluginManager.registerEvents(item, main)
         logger.info("注册物品成功: ${item.name}")
+    }
+
+    fun unregisterItem(item: Item){
+        items.remove(item.name,item)
+        item.features.values.flatten().forEach {
+            if(it is Feature.OnDisable)
+                it.onDisable(main)
+        }
     }
 
     /**

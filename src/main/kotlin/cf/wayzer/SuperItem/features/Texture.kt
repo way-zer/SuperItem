@@ -32,7 +32,7 @@ class Texture(private val default: String? = null) : Feature<String>(), Feature.
             if (!cF.exists()) {
                 val cfText = """
                     |type=item
-                    |items=${item.get<ItemInfo>().itemStack.type.name.toLowerCase()}
+                    |items=${item.get<ItemInfo>().itemStackTemplate.type.name.toLowerCase()}
                     |texture=${item.name}
                     |nbt.SICN=${item.name}
                 """.trimMargin()

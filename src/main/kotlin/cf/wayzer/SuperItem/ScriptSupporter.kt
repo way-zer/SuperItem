@@ -37,6 +37,7 @@ object ScriptSupporter {
             fileExtension = "superitem.kts",
             compilationConfiguration = Configuration::class
     )
+
     abstract class SuperItemScript(name:String):Item.Builder("scripts",name)
     fun loadFile(f: File):ResultWithDiagnostics<EvaluationResult>{
         val conf = createJvmCompilationConfigurationFromTemplate<SuperItemScript> ()

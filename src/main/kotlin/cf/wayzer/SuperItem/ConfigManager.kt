@@ -15,6 +15,7 @@ object ConfigManager{
     }
 
     fun <H : Any> loadForFeature(item: Item, feature: Feature<H>){
+        if(feature.defaultData is Nothing)return
         val config = item.config
         if(!config.has(feature.name))config.add(feature.name, gson.toJsonTree(feature.defaultData))
         feature.data= gson.fromJson(config.get(feature.name),feature.defaultData::class.java)
