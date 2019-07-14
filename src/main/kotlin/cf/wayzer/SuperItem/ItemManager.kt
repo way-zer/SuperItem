@@ -41,7 +41,8 @@ object ItemManager {
             else {
                 try {
                     val name = file.nameWithoutExtension
-                    loadFile(file,"$prefix.$name".substring(1))?.let { ItemManager::registerItem0 }
+                    val item = loadFile(file,"$prefix.$name".substring(1))
+                    if(item!=null)registerItem0(item)
                 } catch (e: Exception) {
                     logger.log(Level.SEVERE, "注册物品失败: ${file.nameWithoutExtension}", e)
                 }
@@ -61,8 +62,8 @@ object ItemManager {
                 val result = ScriptSupporter.loadFile(file)
                 result.onSuccess {
                     val res = result.resultOrNull()!!.returnValue
-                    if(res is ResultValue.Value && res.value is ScriptSupporter.SuperItemScript) {
-                        item = (res.value as ScriptSupporter.SuperItemScript)
+                    if(res is ResultValue.Value && res.value is Item) {
+                        item = (res.value as Item)
                         result.reports.forEachIndexed { index, rep ->
                             logger.log(Level.WARNING,"##$index##"+rep.message,rep.exception)
                         }
