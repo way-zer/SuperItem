@@ -64,7 +64,7 @@ object ItemManager {
                     val res = result.resultOrNull()!!.returnValue
                     if(res is ResultValue.Value && res.value is Item) {
                         item = (res.value as Item)
-                        result.reports.forEachIndexed { index, rep ->
+                        result.reports.filterNot { it.severity==ScriptDiagnostic.Severity.DEBUG }.forEachIndexed { index, rep ->
                             logger.log(Level.WARNING,"##$index##"+rep.message,rep.exception)
                         }
                         return@onSuccess ResultWithDiagnostics.Success(ResultValue.Unit)

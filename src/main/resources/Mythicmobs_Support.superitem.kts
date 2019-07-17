@@ -1,4 +1,4 @@
-@file:DependsOn("io.lumine.xikage.mythicmobs.api.bukkit.events.MythicDropLoadEvent")
+@file:JvmName("io.lumine.xikage.mythicmobs.api.bukkit.events.MythicDropLoadEvent")
 
 import cf.wayzer.SuperItem.ItemManager
 import io.lumine.xikage.mythicmobs.adapters.bukkit.BukkitItemStack
