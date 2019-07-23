@@ -3,13 +3,13 @@ package cf.wayzer.SuperItem
 import cf.wayzer.SuperItem.Main.Companion.main
 import cf.wayzer.SuperItem.features.NBT
 import cf.wayzer.SuperItem.features.Permission
+import cf.wayzer.SuperItem.scripts.ScriptSupporter
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import java.io.File
 import java.net.URLClassLoader
 import java.util.*
 import java.util.logging.Level
-import kotlin.script.experimental.api.*
 
 object ItemManager {
     private val logger = main.logger
@@ -57,26 +57,10 @@ object ItemManager {
     fun loadFile(file: File,className: String):Item?{
         var item:Item? = null
         if(file.name.endsWith("superitem.kts")){
+            ScriptSupporter.init(logger)
             logger.info("Load Item in async: ${file.name}")
             run {
-                val result = ScriptSupporter.loadFile(file)
-                result.onSuccess {
-                    val res = result.resultOrNull()!!.returnValue
-                    if(res is ResultValue.Value && res.value is Item) {
-                        item = (res.value as Item)
-                        result.reports.filterNot { it.severity==ScriptDiagnostic.Severity.DEBUG }.forEachIndexed { index, rep ->
-                            logger.log(Level.WARNING,"##$index##"+rep.message,rep.exception)
-                        }
-                        return@onSuccess ResultWithDiagnostics.Success(ResultValue.Unit)
-                    } else {
-                        return@onSuccess ResultWithDiagnostics.Failure(ScriptDiagnostic("非物品Kts: ${file.name}"))
-                    }
-                }.onFailure {
-                    logger.warning("物品Kts加载失败: ")
-                    it.reports.forEachIndexed { index, rep ->
-                        logger.log(Level.WARNING,"##$index##"+rep.message,rep.exception)
-                    }
-                }
+                item = ScriptSupporter.load(file)
             }
         }else if (file.name.endsWith(".class")&&!file.name.contains("$")){
             val c = ucl.loadClass(className)

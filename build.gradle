@@ -3,6 +3,7 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '5.0.0'
     id 'java'
     id 'org.jetbrains.kotlin.jvm' version "1.3.41"
+    id 'me.qoomon.git-versioning' version '1.2.1'
 }
 ext{
     kotlin_version ="1.3.41"
@@ -35,7 +36,7 @@ shadowJar {
 //start
 
 dependencies{
-    compile 'cf.wayzer:LibraryManager:1.1'
+    compile 'cf.wayzer:LibraryManager:1.2'
     compile "org.jetbrains.kotlin:kotlin-script-util:$kotlin_version"
     compile "org.jetbrains.kotlin:kotlin-scripting-jvm-host:$kotlin_version"
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
@@ -45,11 +46,20 @@ dependencies{
     compileOnly files("$rootDir/lib/PowerNBT.jar")
 //    compile "me.dpohvar.powernbt:PowerNBT:0.8.9.2"
 }
-version="1.3.4"
+version "1.3-SNAPSHOT"
+gitVersioning{
+    tag {
+        pattern = 'v(?<tagVersion>[0-9].*)'
+        versionFormat = '${tagVersion}'
+    }
+    commit {
+        versionFormat = '${version}-${commit.short}'
+    }
+}
 processResources{
     filesMatching(["plugin.yml","bungee.yml"]){
         filter{
-            it.replace("@version@", project.version.toString())
+            it.replace("@version@", version.toString())
         }
     }
 }
@@ -63,12 +73,12 @@ task buildArtifact(type: Zip){
         into("items")
     }
     from(jar.getArchiveFile()){
-        rename(".jar","-lib.jar")
+        rename(".jar","-developLib.jar")
     }
     from(shadowJar.getArchiveFile()){
         rename("-all","")
     }
-    archiveFileName ="SuperItem-${project.version}.zip"
+    archiveFileName ="SuperItem-${version}.zip"
     destinationDirectory =file("$rootDir/artifacts/")
 }
 artifacts {

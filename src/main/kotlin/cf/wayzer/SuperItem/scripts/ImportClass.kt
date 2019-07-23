@@ -1,6 +1,7 @@
 package cf.wayzer.SuperItem.scripts
 
 @Target(AnnotationTarget.FILE)
+@Repeatable
 annotation class ImportClass(
-        val value:String
+        val name:String
 )

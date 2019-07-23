@@ -20,17 +20,17 @@ class Main : JavaPlugin() {
     }
 
     override fun onDisable() {
-        ItemManager.getItems().forEach(ItemManager::unregisterItem)
+        ItemManager.getItems().toList().forEach(ItemManager::unregisterItem)
     }
 
     companion object {
-        val kotlinVersion = "1.3.41"
+        const val kotlinVersion = "1.3.41"
         lateinit var main: Main
             private set
         init {
             LibraryManager(Paths.get("./libs/")).apply {
                 addMavenCentral()
-                require(Dependency("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}"))
+                require(Dependency("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"))
                 require(Dependency("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.1.1"))
                 require(Dependency("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"))
                 require(Dependency("org.jetbrains.kotlin:kotlin-stdlib-common:$kotlinVersion"))
