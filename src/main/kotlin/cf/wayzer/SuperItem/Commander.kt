@@ -64,6 +64,11 @@ class Commander : CommandExecutor {
         }
         if (item.givePlayer(player))
             s.sendMessage("§a给予成功")
+        else{
+            item.drop(player.location,player)
+            player.sendMessage("§a背包已满，已掉落")
+            s.sendMessage("§e背包已满，已掉落")
+        }
     }
 
     private fun getItem(s: CommandSender, args: Array<String>) {

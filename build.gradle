@@ -78,7 +78,7 @@ task buildArtifact(type: Zip){
     from(shadowJar.getArchiveFile()){
         rename("-all","")
     }
-    archiveFileName ="SuperItem-${version}.zip"
+    archiveFileName = "SuperItem-${version.toString()}.zip"
     destinationDirectory =file("$rootDir/artifacts/")
 }
 artifacts {

@@ -2,6 +2,8 @@ package cf.wayzer.SuperItem.features
 
 import cf.wayzer.SuperItem.Feature
 import cf.wayzer.SuperItem.Main
+import cf.wayzer.SuperItem.Main.Companion.main
+import cf.wayzer.SuperItem.events.ItemStackHandleEvent
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -48,6 +50,11 @@ class ItemInfo(
     fun newItemStack(p:Player?=null):ItemStack{
         val itemStack = itemStackTemplate.clone()
         itemStackHandlers.forEach { it(itemStack,p) }
+        main.server.pluginManager.callEvent(ItemStackHandleEvent(itemStack,p))
+        itemStack.itemMeta = itemStack.itemMeta.apply {
+            displayName = displayName.replace("&","§")
+            lore = lore.map { it.replace("&","§") }
+        }
         return itemStack
     }
 

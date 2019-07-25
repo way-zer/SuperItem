@@ -4,6 +4,7 @@ import cf.wayzer.SuperItem.features.CoolDown
 import cf.wayzer.SuperItem.features.ItemInfo
 import cf.wayzer.SuperItem.features.Permission
 import org.bukkit.Bukkit
+import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.bukkit.event.Event
 import org.bukkit.event.EventPriority
@@ -99,6 +100,10 @@ abstract class Item : Listener {
         inv.itemInMainHand = get<ItemInfo>().newItemStack(p)
         p.updateInventory()
         return true
+    }
+
+    fun drop(location: Location,player: Player?=null){
+        location.world.dropItem(location,get<ItemInfo>().newItemStack(player))
     }
 
     /**
