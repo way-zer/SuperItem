@@ -8,6 +8,9 @@ An extensible custom item minecraft plugin
 see [Wiki](https://github.com/way-zer/SuperItem/wiki)
 ## For Chinese
 see README.zh.md
+## Thanks
+* [LibraryManager](https://github.com/way-zer/LibraryManager) (shadowed) For runtime dependencies management
+* [PowerNBT](https://github.com/steakteam/PowerNBT) (shadowed) For NBT support
 ## License
 you should leave link to [this](https://github.com/way-zer/SuperItem/) and keep the author name in command help  
 feel free to fork and pull requests

@@ -26,24 +26,35 @@ allprojects{
 }
 shadowJar {
 //    minimize()
-    dependencies{
-        include(dependency(':LibraryManager:'))
-    }
-    exclude "example/*"
+    configurations = [project.configurations.shadow]
+    relocate("me.dpohvar.powernbt.api","cf.wayzer.util.nbt")
+    relocate("me.dpohvar.powernbt.utils","cf.wayzer.util.nbt.utils")
+//    exclude("me/**")
+//    exclude("example/**")
+//    exclude("(?!plugin).yml")
+    include("*.jar")
+    //for NBT
+    include("me/dpohvar/powernbt/api/**")
+    include("me/dpohvar/powernbt/utils/**")
+
+    include("cf/wayzer/**")
+    include("*.kts")
+    include("META-INF/**")
+    include("plugin.yml")
 }
 
 
 //start
 
 dependencies{
-    compile 'cf.wayzer:LibraryManager:1.2'
+    shadow 'cf.wayzer:LibraryManager:1.2'
+    shadow(files("$rootDir/lib/PowerNBT.jar"))
     compile "org.jetbrains.kotlin:kotlin-script-util:$kotlin_version"
     compile "org.jetbrains.kotlin:kotlin-scripting-jvm-host:$kotlin_version"
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
     compileOnly "org.spigotmc:spigot-api:$mc_version"
     compileOnly "net.md-5:bungeecord-chat:$bc_version"
-    compileOnly files("$rootDir/lib/PowerNBT.jar")
 //    compile "me.dpohvar.powernbt:PowerNBT:0.8.9.2"
 }
 version "1.3-SNAPSHOT"
@@ -72,15 +83,13 @@ task buildArtifact(type: Zip){
         include "**/*.class"
         into("items")
     }
-    from(jar.getArchiveFile()){
-        rename(".jar","-developLib.jar")
-    }
+//    from(jar.getArchiveFile()){
+//        rename(".jar","-developLib.jar")
+//    }
+    from("Scripts")
     from(shadowJar.getArchiveFile()){
         rename("-all","")
     }
-    archiveFileName = "SuperItem-${version.toString()}.zip"
+    archiveFileName = "SuperItem-${rootProject.version}.zip"
     destinationDirectory =file("$rootDir/artifacts/")
-}
-artifacts {
-    buildArtifact
 }
