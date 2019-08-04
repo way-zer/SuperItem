@@ -11,6 +11,7 @@ import java.util.logging.Level
  * 具体设置参照Wiki: <a>https://minecraft.gamepedia.com/Attribute</a>
  * @sss me.dpohvar.powernbt.api.NBTManager
  */
+@Suppress("unused")
 class NBT(override vararg val defaultData: AttributeModifier) : Feature<Array<out NBT.AttributeModifier>>(), Feature.OnPostLoad {
     enum class AttributeType(val attributeName: String, val max: Double) {
         MaxHealth("generic.maxHealth", 1024.0),
