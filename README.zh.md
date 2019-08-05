@@ -4,10 +4,29 @@
 * 每个物品都是一个独立的class文件(运行时加载)
 * 可以自己编写Feature(见下方说明)
 * 每个物品都可以自动生成详细的配置文件(从名字到药水效果,取决于Feature)
-
+* 支持**kotlin DSL** 和 **kotlin Script(也称 Superitem.kts)**(例子详见[Wiki])
 ## 授权
-保留[本站](https://github.com/way-zer/SuperItem/)链接并保留指令帮助页的作者信息  
+保留[本站]链接并保留指令帮助页的作者信息  
 欢迎fork并提出pull请求,有任何疑问请提出issue
+## 举个栗子
+保存为 hello.superitem.kts 于plugins/Superitem/items, 使用
+```kotlin
+require(ItemInfo(Material.NAME_TAG,
+    "&cHello SuperItem", 
+    listOf("&aWelcome to use SuperItem",
+        "&a欢迎使用Superitem",
+        "&c This Item doesn't have other effect")))
+```     
+## 感谢 
+* [LibraryManager] (shadowed) 提供运行依赖管理
+* [PowerNBT] (shadowed) 提供NBT修改支持
+
+[本站]: https://github.com/way-zer/SuperItem/
+[Wiki]: https://github.com/way-zer/SuperItem/wiki
+[LibraryManager]: https://github.com/way-zer/LibraryManager
+[PowerNBT]: https://github.com/steakteam/PowerNBT
+
+# ------------过期内容(详见[Wiki])---------------
 ## 怎样写一个item
 ```kotlin
     package cf.wayzer.example
