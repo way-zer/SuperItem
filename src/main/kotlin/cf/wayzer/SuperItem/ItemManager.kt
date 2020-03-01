@@ -29,7 +29,6 @@ object ItemManager {
         ucl = URLClassLoader.newInstance(arrayOf(rootDir.toURI().toURL()),
                 ItemManager::class.java.classLoader)
         loadDir(rootDir,"")
-        Main.main.saveConfig()
     }
 
     private fun loadDir(dir:File,prefix:String){
@@ -129,7 +128,7 @@ object ItemManager {
      * 通过 Item.class.simpleName 查询Item
      */
     fun getItem(className: String): Item? {
-        return items[className]
+        return items[className.toUpperCase()]
     }
 
     /**

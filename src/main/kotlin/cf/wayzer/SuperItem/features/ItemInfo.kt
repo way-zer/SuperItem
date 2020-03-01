@@ -49,9 +49,9 @@ class ItemInfo(
         val itemStack = itemStackTemplate.clone()
         itemStackHandlers.forEach { it(itemStack,p) }
         main.server.pluginManager.callEvent(ItemStackHandleEvent(itemStack,p))
-        itemStack.itemMeta = itemStack.itemMeta.apply {
-            displayName = displayName.replace("&","§")
-            lore = lore.map { it.replace("&","§") }
+        itemStack.itemMeta = itemStack.itemMeta?.apply {
+            setDisplayName(displayName.replace("&","§"))
+            lore = lore?.map { it.replace("&","§") }
         }
         return itemStack
     }
@@ -63,8 +63,7 @@ class ItemInfo(
     fun registerHandler(handler: ItemStackHandler)=itemStackHandlers.add(handler)
 
     override fun onPostLoad(main: Main) {
-        @Suppress("DEPRECATION")
-        val itemStack = ItemStack(data.material, 1, 0,data.data.toByte())
+        val itemStack = ItemStack(data.material, 1)
 
         val im = itemStack.itemMeta!!
         im.setDisplayName(data.name)

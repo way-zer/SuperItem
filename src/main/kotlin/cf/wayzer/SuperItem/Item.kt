@@ -1,8 +1,6 @@
 package cf.wayzer.SuperItem
 
-import cf.wayzer.SuperItem.features.CoolDown
 import cf.wayzer.SuperItem.features.ItemInfo
-import cf.wayzer.SuperItem.features.Permission
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Player
@@ -37,23 +35,11 @@ abstract class Item : Listener {
 
     val features : MutableMap<Class<*>,MutableList<Feature<*>>> = mutableMapOf()
 
-    @Deprecated("保证扩展和安全,请使用get,1.3版本弃用",ReplaceWith("get<ItemInfo>().newItemStack()"))
-    val item
-        get() = get<ItemInfo>().newItemStack()
-
-    @Deprecated("保证扩展和安全,请使用get,1.3版本弃用",ReplaceWith("get<Permission>()"))
-    val permission
-        get() = get<Permission>()
-
-    @Deprecated("保证扩展和安全,请使用get,1.3版本弃用",ReplaceWith("get<CoolDown>()"))
-    val coolDown
-        get() = get<CoolDown>()
-
     open val name: String
-        get() = javaClass.simpleName
+        get() = javaClass.simpleName.toUpperCase()
 
     open val packageName: String
-        get() = javaClass.`package`.name
+        get() = javaClass.`package`?.name?:"ROOT"
 
 
     /**
@@ -103,7 +89,7 @@ abstract class Item : Listener {
     }
 
     fun drop(location: Location,player: Player?=null){
-        location.world.dropItem(location,get<ItemInfo>().newItemStack(player))
+        location.world?.dropItem(location,get<ItemInfo>().newItemStack(player))
     }
 
     /**
@@ -134,19 +120,6 @@ abstract class Item : Listener {
          * 插件实例,可用于Scheduler等操作
          */
         val pluginMain = Main.main as JavaPlugin
-
-
-        @Deprecated("不建议直接使用,1.3版本弃用", ReplaceWith("get<Permission>().hasPermission(p)"))
-        fun Item.hasPermission(p: Player) =
-                get<Permission>().hasPermission(p)
-
-        @Deprecated("不建议直接使用,1.3版本弃用", ReplaceWith("get<CoolDown>().isCoolDownOK(p)"))
-        fun Item.isCoolDownOK(p: Player) =
-                get<CoolDown>().isCoolDownOK(p)
-
-        @Deprecated("不建议直接使用,1.3版本弃用", ReplaceWith("get<CoolDown>().add(p)"))
-        fun Item.addCoolDown(p: Player) =
-                get<CoolDown>().add(p)
 
         /**
          * 消耗玩家指定物品

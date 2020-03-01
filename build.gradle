@@ -2,11 +2,11 @@
 plugins {
     id 'com.github.johnrengelman.shadow' version '5.0.0'
     id 'java'
-    id 'org.jetbrains.kotlin.jvm' version "1.3.41"
+    id 'org.jetbrains.kotlin.jvm' version "1.3.61"
     id 'me.qoomon.git-versioning' version '1.2.1'
 }
 ext{
-    kotlin_version ="1.3.41"
+    kotlin_version ="1.3.61"
     mc_version = '1.14-R0.1-SNAPSHOT'
     bc_version ='1.12-SNAPSHOT'
 }
@@ -14,6 +14,7 @@ ext{
 allprojects{
     group = 'cf.wayzer'
     repositories {
+        maven{ url "http://maven.aliyun.com/nexus/content/groups/public/"}
         jcenter()
         mavenCentral()
         maven {
@@ -28,7 +29,9 @@ shadowJar {
 //    minimize()
     configurations = [project.configurations.shadow]
     relocate("me.dpohvar.powernbt.api","cf.wayzer.util.nbt")
+    relocate("me.dpohvar.powernbt.nbt","cf.wayzer.util.nbt.nbt")
     relocate("me.dpohvar.powernbt.utils","cf.wayzer.util.nbt.utils")
+    relocate("me.dpohvar.powernbt.exception","cf.wayzer.util.nbt.exception")
 //    exclude("me/**")
 //    exclude("example/**")
 //    exclude("(?!plugin).yml")
@@ -36,6 +39,8 @@ shadowJar {
     //for NBT
     include("me/dpohvar/powernbt/api/**")
     include("me/dpohvar/powernbt/utils/**")
+    include("me/dpohvar/powernbt/nbt/**")
+    include("me/dpohvar/powernbt/exception/**")
 
     include("cf/wayzer/**")
     include("*.kts")
@@ -47,7 +52,7 @@ shadowJar {
 //start
 
 dependencies{
-    shadow 'cf.wayzer:LibraryManager:1.2'
+    shadow 'cf.wayzer:LibraryManager:1.3'
     shadow(files("$rootDir/lib/PowerNBT.jar"))
     compile "org.jetbrains.kotlin:kotlin-script-util:$kotlin_version"
     compile "org.jetbrains.kotlin:kotlin-scripting-jvm-host:$kotlin_version"
@@ -74,7 +79,7 @@ processResources{
         }
     }
 }
-def items = subprojects[0] as Project
+def items = subprojects.first()
 task buildArtifact(type: Zip){
     dependsOn items.getTasksByName("classes",false)
     dependsOn shadowJar
@@ -92,4 +97,12 @@ task buildArtifact(type: Zip){
     }
     archiveFileName = "SuperItem-${rootProject.version}.zip"
     destinationDirectory =file("$rootDir/artifacts/")
+}
+
+task develCopy(type: Copy){
+    dependsOn shadowJar
+    from(shadowJar.getArchiveFile()){
+        rename("-all","")
+    }
+    into "F:\\minecraft\\RogInkTestServer\\plugins"
 }

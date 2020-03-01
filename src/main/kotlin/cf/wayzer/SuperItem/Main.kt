@@ -24,12 +24,12 @@ class Main : JavaPlugin() {
     }
 
     companion object {
-        const val kotlinVersion = "1.3.41"
+        const val kotlinVersion = "1.3.61"
         lateinit var main: Main
             private set
         init {
             LibraryManager(Paths.get("./libs/")).apply {
-                addMavenCentral()
+                addAliYunMirror()
                 require(Dependency("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"))
                 require(Dependency("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.1.1"))
                 require(Dependency("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"))

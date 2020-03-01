@@ -28,13 +28,13 @@ class ScriptLoader {
         var item:Item?=null
         val result = load0(file)
         result.onSuccess {
-            val res = result.resultOrNull()!!.returnValue
-            if(res is ResultValue.Value && res.value is Item) {
-                item = (res.value as Item)
+            val res = result.valueOrThrow().returnValue
+            if(res.scriptInstance is Item) {
+                item = (res.scriptInstance as Item)
                 result.reports.filterNot { it.severity== ScriptDiagnostic.Severity.DEBUG }.forEachIndexed { index, rep ->
                     logger.log(Level.WARNING,"##$index##"+rep.message,rep.exception)
                 }
-                return@onSuccess ResultWithDiagnostics.Success(ResultValue.Unit)
+                return@onSuccess ResultWithDiagnostics.Success(res)
             } else {
                 return@onSuccess ResultWithDiagnostics.Failure(ScriptDiagnostic("非物品Kts: ${file.name}"))
             }

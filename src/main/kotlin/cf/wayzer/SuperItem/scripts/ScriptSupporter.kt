@@ -15,7 +15,7 @@ object ScriptSupporter {
     fun init(logger:Logger){
         if(inited)return
         LibraryManager(Paths.get("./libs/")).apply {
-            addMavenCentral()
+            addAliYunMirror()
             require(Dependency("org.jetbrains.kotlin:kotlin-script-runtime:${Main.kotlinVersion}"))
             require(Dependency("org.jetbrains.kotlin:kotlin-scripting-common:${Main.kotlinVersion}"))
             require(Dependency("org.jetbrains.intellij.deps:trove4j:1.0.20181211"))

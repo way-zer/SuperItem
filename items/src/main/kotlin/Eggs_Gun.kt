@@ -8,7 +8,6 @@ import org.bukkit.DyeColor
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.block.Block
-import org.bukkit.block.data.BlockData
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Monster
 import org.bukkit.entity.Player
@@ -23,6 +22,7 @@ import org.bukkit.event.entity.ProjectileHitEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.server.PluginDisableEvent
 import org.bukkit.material.Colorable
+import org.bukkit.material.MaterialData
 import org.bukkit.scheduler.BukkitRunnable
 import java.util.*
 
@@ -36,17 +36,17 @@ class Eggs_Gun : Item() {
         internal var time: Byte = 0
 
         init {
-            val data = block.blockData as Colorable
+            val data = block.state.data as Colorable
             old_color = data.color?:DyeColor.WHITE
             time = 20
             data.color = DyeColor.RED
-            block.blockData = data as BlockData
+            block.state.data = data as MaterialData
         }
 
         fun setback() {
-            val data = block.blockData as Colorable
+            val data = block.state.data as Colorable
             data.color = old_color
-            block.blockData = data as BlockData
+            block.state.data = data as MaterialData
         }
     }
 
@@ -104,16 +104,16 @@ class Eggs_Gun : Item() {
     @EventHandler
     fun onHit(e: ProjectileHitEvent) {
         if (e.entityType == EntityType.SNOWBALL && "§7雪球来复枪" == e.entity.customName
-                && e.entity.shooter is Player) {
-            val snow = e.entity
-            val loc = snow.location.block.location
+                && e.entity.shooter is Player && e.hitBlock !=null) {
+//            val snow = e.entity
+            val loc = e.hitBlock!!.location
             for (i in -1..1)
                 for (i1 in -1..1)
                     for (i11 in -1..1)
                         if (i == 0 || i1 == 0 || i11 == 0) {
                             val b = loc.world!!.getBlockAt(loc.blockX + i, loc.blockY + i1,
                                     loc.blockZ + i11)
-                            if(b.blockData is Colorable && (b.blockData as Colorable).color != DyeColor.RED){
+                            if(b.state.data is Colorable && (b.state.data as Colorable).color != DyeColor.RED){
                                 blocks.add(BlockInfo(b))
                             }
                         }

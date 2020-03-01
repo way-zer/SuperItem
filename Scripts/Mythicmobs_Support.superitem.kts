@@ -11,7 +11,6 @@ listen<MythicDropLoadEvent>{
     val name = (it.dropName as String).toUpperCase()
     if(!name.startsWith("SI_"))return@listen
     val item = ItemManager.getItem(name.substring(3))
-    //if(item==null)it.register(NothingDrop(it.config.line,it.config))
     if(item!=null)it.register(ItemDrop(it.config.line,it.config,BukkitItemStack(item.get<ItemInfo>().newItemStack())))
 }
 

@@ -2,8 +2,8 @@ package cf.wayzer.SuperItem.features
 
 import cf.wayzer.SuperItem.Feature
 import cf.wayzer.SuperItem.Main
-import me.dpohvar.powernbt.PowerNBT
 import me.dpohvar.powernbt.api.NBTCompound
+import me.dpohvar.powernbt.api.NBTManager
 import java.util.logging.Level
 
 /**
@@ -71,6 +71,6 @@ class NBT(override vararg val defaultData: AttributeModifier) : Feature<Array<ou
     }
 
     companion object {
-        val api = PowerNBT.getApi()!!
+        val api = NBTManager.getInstance()
     }
 }
