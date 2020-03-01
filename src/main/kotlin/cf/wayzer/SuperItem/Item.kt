@@ -21,7 +21,7 @@ abstract class Item : Listener {
 
         @Suppress("unused")
         inline fun <reified T:Event>listen(ignoreCancelled:Boolean=false, priority: EventPriority = EventPriority.NORMAL, crossinline handle:(T)->Unit){
-            Bukkit.getServer().pluginManager.registerEvent(T::class.java,this,priority, { _, event -> handle(event as T) },pluginMain,ignoreCancelled)
+            Bukkit.getServer().pluginManager.registerEvent(T::class.java,this,priority, { _, event -> if(event is T)handle(event) },pluginMain,ignoreCancelled)
         }
 
         fun register(){
