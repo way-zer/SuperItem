@@ -4,6 +4,7 @@ import cf.wayzer.SuperItem.features.CoolDown
 import cf.wayzer.SuperItem.features.ItemInfo
 import cf.wayzer.SuperItem.features.Permission
 import org.bukkit.Bukkit
+import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.bukkit.event.Event
 import org.bukkit.event.EventPriority
@@ -36,9 +37,9 @@ abstract class Item : Listener {
 
     val features : MutableMap<Class<*>,MutableList<Feature<*>>> = mutableMapOf()
 
-    @Deprecated("保证扩展和安全,请使用get,1.3版本弃用",ReplaceWith("get<ItemInfo>().itemStack"))
+    @Deprecated("保证扩展和安全,请使用get,1.3版本弃用",ReplaceWith("get<ItemInfo>().newItemStack()"))
     val item
-        get() = get<ItemInfo>().itemStack
+        get() = get<ItemInfo>().newItemStack()
 
     @Deprecated("保证扩展和安全,请使用get,1.3版本弃用",ReplaceWith("get<Permission>()"))
     val permission
@@ -75,6 +76,17 @@ abstract class Item : Listener {
     inline fun <reified T:Feature<*>> get(index: Int=0):T = get(T::class.java,index)
 
     /**
+     * 判断是否有对应feature
+     */
+    fun <T: Feature<*>> has(c : Class<T>):Boolean = features[c]?.isNotEmpty()?:false
+
+    /**
+     * @see has(c)
+     * 只能在kotlin下调用
+     */
+    inline fun <reified T:Feature<*>> has():Boolean = has(T::class.java)
+
+    /**
      * 给予玩家道具
      */
     fun givePlayer(p: Player): Boolean {
@@ -85,9 +97,13 @@ abstract class Item : Listener {
             return false
         }
         inv.setItem(i, inv.itemInMainHand)
-        inv.setItemInMainHand(get<ItemInfo>().itemStack.clone())
+        inv.setItemInMainHand(get<ItemInfo>().newItemStack(p))
         p.updateInventory()
         return true
+    }
+
+    fun drop(location: Location,player: Player?=null){
+        location.world.dropItem(location,get<ItemInfo>().newItemStack(player))
     }
 
     /**

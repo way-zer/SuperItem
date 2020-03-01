@@ -1,6 +1,9 @@
 package cf.wayzer.SuperItem
 
+import cf.wayzer.libraryManager.Dependency
+import cf.wayzer.libraryManager.LibraryManager
 import org.bukkit.plugin.java.JavaPlugin
+import java.nio.file.Paths
 import java.util.logging.Level
 
 class Main : JavaPlugin() {
@@ -17,23 +20,25 @@ class Main : JavaPlugin() {
     }
 
     override fun onDisable() {
-        set.forEach {
-            it.onDisable(this)
-        }
+        ItemManager.getItems().toList().forEach(ItemManager::unregisterItem)
     }
 
     companion object {
+        const val kotlinVersion = "1.3.41"
         lateinit var main: Main
             private set
-    }
-
-    private val set = mutableSetOf<Feature.OnDisable>()
-
-    /**
-     * 添加插件Disable的Listener
-     * 供Feature使用
-     */
-    fun addDisableListener(listener: Feature.OnDisable) {
-        set.add(listener)
+        init {
+            LibraryManager(Paths.get("./libs/")).apply {
+                addMavenCentral()
+                require(Dependency("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"))
+                require(Dependency("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.1.1"))
+                require(Dependency("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"))
+                require(Dependency("org.jetbrains.kotlin:kotlin-stdlib-common:$kotlinVersion"))
+                require(Dependency("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"))
+                require(Dependency("org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"))
+                require(Dependency("org.jetbrains:annotations:13.0"))
+                loadToClasspath()
+            }
+        }
     }
 }

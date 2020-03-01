@@ -6,6 +6,7 @@ import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import java.io.File
 
 class Commander : CommandExecutor {
 
@@ -22,6 +23,10 @@ class Commander : CommandExecutor {
                 }
                 "give" -> {
                     giveItem(s, args)
+                    return true
+                }
+                "load" ->{
+                    loadItem(s,args)
                     return true
                 }
             }
@@ -59,6 +64,11 @@ class Commander : CommandExecutor {
         }
         if (item.givePlayer(player))
             s.sendMessage("§a给予成功")
+        else{
+            item.drop(player.location,player)
+            player.sendMessage("§a背包已满，已掉落")
+            s.sendMessage("§e背包已满，已掉落")
+        }
     }
 
     private fun getItem(s: CommandSender, args: Array<String>) {
@@ -118,10 +128,26 @@ class Commander : CommandExecutor {
         var i = pages * 10 - 10
         while (i < list.size && i < pages * 10) {
             s.sendMessage(String.format("§e%03d §a|§e %-20s §a|§e %s",
-                    i, list[i].name, list[i].get<ItemInfo>().itemStack.itemMeta?.displayName))
+                    i, list[i].name, list[i].get<ItemInfo>().newItemStack().itemMeta.displayName))
             i++
         }
         s.sendMessage("§a================   §7$pages/$maxpages   §a================")
+    }
+
+    private fun loadItem(s:CommandSender, args: Array<String>){
+        if (!s.hasPermission("SuperItem.command.load")) {
+            s.sendMessage("§c没有权限")
+            return
+        }
+        if (args.size < 2) {
+            s.sendMessage("§c请输入Path")
+            return
+        }
+        if (!File(ItemManager.rootDir,args[1]).exists()){
+            s.sendMessage("§c请输入Path")
+            return
+        }
+        TODO("From path to get item name")
     }
 
     private fun help(s: CommandSender) {
@@ -131,6 +157,7 @@ class Commander : CommandExecutor {
         s.sendMessage("§a§l+§5/SuperItem list <页码> §e打开Item列表")
         s.sendMessage("§a§l+§5/SuperItem get <ID/ClassName> §e获取Item")
         s.sendMessage("§a§l+§5/SuperItem give <ID/ClassName> <PLAYER> §e给予玩家Item")
+        s.sendMessage("§a§l+§5/SuperItem load <Path> §e加载或重载Item")
     }
 
 }
