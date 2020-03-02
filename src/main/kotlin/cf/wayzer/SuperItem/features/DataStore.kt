@@ -5,11 +5,10 @@ import cf.wayzer.SuperItem.Main
 import org.bukkit.metadata.FixedMetadataValue
 import org.bukkit.metadata.Metadatable
 
-object DataStore {
-    interface DataStore<T>{
-        fun set(o: Metadatable,value: T?)
-        fun <T> get(o:Metadatable,defaultValue:T):T
-    }
+interface DataStore<T>{
+    fun set(o: Metadatable,value: T?)
+    fun <T> get(o:Metadatable,defaultValue:T):T
+
     class MetaStore<T>(override val defaultData: Nothing) :Feature<Nothing>(),DataStore<T>{
         private val key:String
             get() = "SIMS_${item.name}"

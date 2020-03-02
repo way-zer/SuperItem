@@ -5,7 +5,6 @@ import cf.wayzer.SuperItem.Main
 import cf.wayzer.libraryManager.Dependency
 import cf.wayzer.libraryManager.LibraryManager
 import java.io.File
-import java.net.URLClassLoader
 import java.nio.file.Paths
 import java.util.logging.Logger
 
@@ -26,8 +25,8 @@ object ScriptSupporter {
             require(Dependency("org.jetbrains.kotlin:kotlin-scripting-compiler-impl:${Main.kotlinVersion}"))
             require(Dependency("org.jetbrains.kotlin:kotlin-compiler:${Main.kotlinVersion}"))
             require(Dependency("org.jetbrains.kotlin:kotlin-script-util:${Main.kotlinVersion}"))
-        }.loadToClassLoader(Main::class.java.classLoader as URLClassLoader)
-        loader = ScriptLoader()
+        }.loadToClassLoader(Main::class.java.classLoader)
+        loader = Class.forName("cf.wayzer.SuperItem.scripts.ScriptLoader").newInstance() as ScriptLoader
         loader.logger=logger
         inited =true
     }

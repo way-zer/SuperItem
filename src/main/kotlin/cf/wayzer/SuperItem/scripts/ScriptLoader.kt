@@ -50,7 +50,7 @@ class ScriptLoader {
     private fun load0(f: File):ResultWithDiagnostics<EvaluationResult>{
         return BasicJvmScriptingHost(hostConfiguration).eval(f.toScriptSource(),compilationConfiguration, ScriptEvaluationConfiguration {
             jvm {
-                baseClassLoader(ScriptSupporter::class.java.classLoader)
+                baseClassLoader(ScriptLoader::class.java.classLoader)
             }
             constructorArgs(f.name.split(".")[0].toUpperCase())
         })

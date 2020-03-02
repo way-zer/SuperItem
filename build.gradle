@@ -52,7 +52,7 @@ shadowJar {
 //start
 
 dependencies{
-    shadow 'cf.wayzer:LibraryManager:1.3'
+    shadow 'cf.wayzer:LibraryManager:1.3.2'
     shadow(files("$rootDir/lib/PowerNBT.jar"))
     compile "org.jetbrains.kotlin:kotlin-script-util:$kotlin_version"
     compile "org.jetbrains.kotlin:kotlin-scripting-jvm-host:$kotlin_version"

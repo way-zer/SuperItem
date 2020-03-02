@@ -37,7 +37,7 @@ class Main : JavaPlugin() {
                 require(Dependency("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"))
                 require(Dependency("org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"))
                 require(Dependency("org.jetbrains:annotations:13.0"))
-                loadToClasspath()
+                loadToClassLoader(Main::class.java.classLoader)
             }
         }
     }
