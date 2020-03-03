@@ -1,7 +1,7 @@
 package cf.wayzer.SuperItem.features
 
 import cf.wayzer.SuperItem.Feature
-import me.dpohvar.powernbt.api.NBTCompound
+import cf.wayzer.SuperItem.features.NBT.API.set
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerItemDamageEvent
@@ -22,10 +22,10 @@ class Durability(override val defaultData: Int) : Feature<Int>(), Feature.HasLis
      * @param now 值(默认 满)
      */
     fun setDurability(item: ItemStack, now: Int = data) {
-        val nbt = NBT.api.read(item) ?: let { NBTCompound() }
+        val nbt = NBT.API.readOrCreate(item)
         nbt["SICD"] = now
         nbt["SIMD"] = data
-        NBT.api.write(item, nbt)
+        NBT.API.write(item, nbt)
     }
 
     /**
@@ -34,8 +34,8 @@ class Durability(override val defaultData: Int) : Feature<Int>(), Feature.HasLis
      * @return 获得到的耐久(错误的物品为-1)
      */
     fun getDurability(item: ItemStack): Int {
-        val nbt = NBT.api.read(item)
-        return if (nbt?.containsKey("SICN") == true) nbt.getInt("SICN")
+        val nbt = NBT.API.read(item)
+        return if (nbt?.hasKey("SICN") == true) nbt.getInteger("SICN")
         else -1
     }
 
@@ -45,16 +45,16 @@ class Durability(override val defaultData: Int) : Feature<Int>(), Feature.HasLis
             fun onDurability(e: PlayerItemDamageEvent) {
                 if (e.item.durability < 1)
                     return
-                val nbt = NBT.api.read(e.item)
-                if (nbt?.contains("SIMD") == true) {
-                    val max = nbt.getInt("SIMD")
-                    var cur = nbt.getInt("SICD")
+                val nbt = NBT.API.read(e.item)
+                if (nbt?.hasKey("SIMD") == true) {
+                    val max = nbt.getInteger("SIMD")
+                    var cur = nbt.getInteger("SICD")
                     cur -= e.damage
                     if (cur < 0) {
                         e.damage = 99999
                     } else {
                         nbt["SICD"] = cur
-                        NBT.api.write(e.item, nbt)
+                        NBT.API.write(e.item, nbt)
                         cur = ((max.toDouble()) / cur * e.item.type.maxDurability).toInt()
                         e.damage = e.item.durability - cur
                     }

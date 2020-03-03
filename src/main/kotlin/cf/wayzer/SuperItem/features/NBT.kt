@@ -2,8 +2,10 @@ package cf.wayzer.SuperItem.features
 
 import cf.wayzer.SuperItem.Feature
 import cf.wayzer.SuperItem.Main
-import me.dpohvar.powernbt.api.NBTCompound
-import me.dpohvar.powernbt.api.NBTManager
+import de.tr7zw.changeme.nbtapi.NBTCompound
+import de.tr7zw.changeme.nbtapi.NBTItem
+import de.tr7zw.changeme.nbtapi.utils.nmsmappings.ReflectionMethod
+import org.bukkit.inventory.ItemStack
 import java.util.logging.Level
 
 /**
@@ -52,25 +54,40 @@ class NBT(override vararg val defaultData: AttributeModifier) : Feature<Array<ou
     )
 
     override fun onPostLoad(main: Main) {
-        val nbt = api.read(item.get<ItemInfo>().itemStackTemplate).compound("tag").list("AttributeModifiers")
-        data.forEach {
-            if (it.amount < it.type.max) {
-                val node = NBTCompound()
-                node["AttributeName"] = it.type.attributeName
-                node["Name"] = "SuperItem NBT ${it.type.name}"
-                it.slot?.let { node["Slot"] = it.name.toLowerCase() }
-                node["Operation"] = it.operation.ordinal
-                node["Amount"] = it.amount
-                node["UUIDLeast"] = 894654
-                node["UUIDMost"] = 2872
-                nbt.add(node)
+        val nbt = NBTItem(item.get<ItemInfo>().itemStackTemplate).getCompoundList("AttributeModifiers")
+        data.forEach { attr ->
+            if (attr.amount < attr.type.max) {
+                val node = nbt.addCompound()
+                node.setString("AttributeName", attr.type.attributeName)
+                node.setString("Name", "SuperItem NBT ${attr.type.name}")
+                attr.slot?.let { node.setString("Slot", it.name.toLowerCase()) }
+                node.setInteger("Operation", attr.operation.ordinal)
+                node.setDouble("Amount", attr.amount)
+                node.setInteger("UUIDLeast", 894654)
+                node.setInteger("UUIDMost", 2872)
             } else {
-                main.logger.log(Level.WARNING, "错误的NBT属性: $it")
+                main.logger.log(Level.WARNING, "错误的NBT属性: $attr")
             }
         }
     }
 
+    object API {
+        fun read(item: ItemStack): NBTCompound? = NBTItem(item).let { if (it.hasNBTData()) it else null }
+        fun readOrCreate(item: ItemStack): NBTCompound = NBTItem(item)
+        fun write(item: ItemStack,nbt:NBTCompound){
+            val stack = ReflectionMethod.ITEMSTACK_NMSCOPY.run(null, item)
+            ReflectionMethod.ITEMSTACK_SET_TAG.run(stack, nbt.compound)
+        }
+        operator fun NBTCompound.set(key:String,v:Int) {
+            setInteger(key,v)
+        }
+        operator fun NBTCompound.set(key:String,v:String) {
+            setString(key,v)
+        }
+    }
+
     companion object {
-        val api = NBTManager.getInstance()
+        @Deprecated("Use API", ReplaceWith("NBT.API"))
+        val api = API
     }
 }

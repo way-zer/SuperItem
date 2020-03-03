@@ -121,7 +121,7 @@ object ItemManager {
     fun getItem(item: ItemStack?): Item? {
         if (item == null || item.type == Material.AIR)
             return null
-        return NBT.api.read(item)?.let { getItem(it.getString("SICN")) }
+        return NBT.API.read(item)?.let { getItem(it.getString("SICN")) }
     }
 
     /**

@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.PlayerInventory
 import org.bukkit.plugin.java.JavaPlugin
 import java.util.*
+import java.util.logging.Logger
 
 /**
  * 继承后编译放到items目录下
@@ -40,6 +41,9 @@ abstract class Item : Listener {
 
     open val packageName: String
         get() = javaClass.`package`?.name?:"ROOT"
+
+    val logger: Logger
+        get() = Logger.getLogger("SI-$packageName-$name")
 
 
     /**

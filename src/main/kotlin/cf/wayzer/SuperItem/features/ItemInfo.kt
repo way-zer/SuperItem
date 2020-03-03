@@ -4,6 +4,7 @@ import cf.wayzer.SuperItem.Feature
 import cf.wayzer.SuperItem.Main
 import cf.wayzer.SuperItem.Main.Companion.main
 import cf.wayzer.SuperItem.events.ItemStackHandleEvent
+import cf.wayzer.SuperItem.features.NBT.API.set
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -71,9 +72,9 @@ class ItemInfo(
         itemStack.itemMeta = im
         loadOther(im, itemStack)
         itemStack.itemMeta = im
-        val nbt = NBT.api.read(itemStack)
+        val nbt = NBT.API.readOrCreate(itemStack)
         nbt[NBT_TAG_NAME] = item.name
-        NBT.api.write(itemStack, nbt)
+        NBT.API.write(itemStack, nbt)
 
         this.itemStackTemplate = itemStack
     }
