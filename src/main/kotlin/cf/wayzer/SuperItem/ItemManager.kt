@@ -5,6 +5,7 @@ import cf.wayzer.SuperItem.features.NBT
 import cf.wayzer.SuperItem.features.Permission
 import cf.wayzer.SuperItem.scripts.ScriptSupporter
 import org.bukkit.Material
+import org.bukkit.event.HandlerList
 import org.bukkit.inventory.ItemStack
 import java.io.File
 import java.net.URLClassLoader
@@ -101,6 +102,7 @@ object ItemManager {
                 main.server.pluginManager.registerEvents(it.listener, main)
             }
         }
+        item.onEnable()
         items[item.name] = item
         main.server.pluginManager.registerEvents(item, main)
         logger.info("注册物品成功: ${item.name}")
@@ -108,6 +110,8 @@ object ItemManager {
 
     fun unregisterItem(item: Item){
         items.remove(item.name,item)
+        HandlerList.unregisterAll(item)
+        item.onDisable()
         item.features.values.flatten().forEach {
             if(it is Feature.OnDisable)
                 it.onDisable(main)

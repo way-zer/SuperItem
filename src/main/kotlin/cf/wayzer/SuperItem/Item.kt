@@ -18,22 +18,38 @@ import java.util.logging.Logger
  */
 abstract class Item : Listener {
     open class Builder(override val packageName: String,override val name:String):Item(){
+        private var disableF = fun(){}
+        private var enableF = fun(){}
         override fun loadFeatures() {}
+        override fun onDisable() {
+            super.onDisable()
+            disableF()
+        }
 
-        @Suppress("unused")
-        inline fun <reified T:Event>listen(ignoreCancelled:Boolean=false, priority: EventPriority = EventPriority.NORMAL, crossinline handle:(T)->Unit){
-            Bukkit.getServer().pluginManager.registerEvent(T::class.java,this,priority, { _, event -> if(event is T)handle(event) },pluginMain,ignoreCancelled)
+        override fun onEnable() {
+            super.onEnable()
+            enableF()
         }
 
         fun register(){
             ItemManager.registerItem(this)
         }
+
+        fun bindDisable(h:()->Unit){ disableF = h }
+        fun bindEnable(h:()->Unit){ enableF = h }
     }
     /**
      * 获取默认物品
      */
     abstract fun loadFeatures()
+    open fun onEnable(){
+        enabled = true
+    }
+    open fun onDisable(){
+        enabled = false
+    }
 
+    var enabled = false
     val features : MutableMap<Class<*>,MutableList<Feature<*>>> = mutableMapOf()
 
     open val name: String
@@ -44,6 +60,17 @@ abstract class Item : Listener {
 
     val logger: Logger
         get() = Logger.getLogger("SI-$packageName-$name")
+
+    fun <T:Event>listen(cls:Class<T>,ignoreCancelled:Boolean=false, priority: EventPriority = EventPriority.NORMAL, handle:(T)->Unit){
+        Bukkit.getServer().pluginManager.registerEvent(cls,this,priority, { _, event ->
+            @Suppress("UNCHECKED_CAST")
+            if(enabled && cls.isInstance(event))handle(event as T)
+        },pluginMain,ignoreCancelled)
+    }
+
+    inline fun <reified T:Event>listen(ignoreCancelled:Boolean=false, priority: EventPriority = EventPriority.NORMAL, noinline handle:(T)->Unit){
+        listen(T::class.java,ignoreCancelled, priority, handle)
+    }
 
 
     /**

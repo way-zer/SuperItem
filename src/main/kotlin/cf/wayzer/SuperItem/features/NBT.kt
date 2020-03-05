@@ -4,7 +4,6 @@ import cf.wayzer.SuperItem.Feature
 import cf.wayzer.SuperItem.Main
 import de.tr7zw.changeme.nbtapi.NBTCompound
 import de.tr7zw.changeme.nbtapi.NBTItem
-import de.tr7zw.changeme.nbtapi.utils.nmsmappings.ReflectionMethod
 import org.bukkit.inventory.ItemStack
 import java.util.logging.Level
 
@@ -75,8 +74,7 @@ class NBT(override vararg val defaultData: AttributeModifier) : Feature<Array<ou
         fun read(item: ItemStack): NBTCompound? = NBTItem(item).let { if (it.hasNBTData()) it else null }
         fun readOrCreate(item: ItemStack): NBTCompound = NBTItem(item)
         fun write(item: ItemStack,nbt:NBTCompound){
-            val stack = ReflectionMethod.ITEMSTACK_NMSCOPY.run(null, item)
-            ReflectionMethod.ITEMSTACK_SET_TAG.run(stack, nbt.compound)
+            item.itemMeta = (nbt as NBTItem).item.itemMeta
         }
         operator fun NBTCompound.set(key:String,v:Int) {
             setInteger(key,v)

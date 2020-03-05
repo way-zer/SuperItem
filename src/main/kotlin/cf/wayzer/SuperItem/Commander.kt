@@ -143,11 +143,23 @@ class Commander : CommandExecutor {
             s.sendMessage("§c请输入Path")
             return
         }
-        if (!File(ItemManager.rootDir,args[1]).exists()){
-            s.sendMessage("§c请输入Path")
-            return
+        val file = File(ItemManager.rootDir,args[1])
+        if (!file.exists())
+            return s.sendMessage("§c请输入Path")
+        if(file.extension!="kts")
+            return s.sendMessage("§c只有脚本允许重载")
+        val name = file.name.removeSuffix(".superitem.kts")
+        ItemManager.getItem(name)?.let{
+            s.sendMessage("§a发现旧实例存在，尝试卸载")
+            ItemManager.unregisterItem(it)
+            s.sendMessage("§a发现旧实例存在，卸载成功")
         }
-        TODO("From path to get item name")
+        s.sendMessage("§a开始加载脚本，可能会有所卡顿")
+        ItemManager.loadFile(file,"")?.let {
+            ItemManager.registerItem(it)
+            return s.sendMessage("§a脚本加载成功")
+        }
+        return s.sendMessage("§c脚本加载失败，查看后台以了解错误信息")
     }
 
     private fun help(s: CommandSender) {
