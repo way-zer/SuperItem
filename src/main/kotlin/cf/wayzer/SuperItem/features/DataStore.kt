@@ -10,7 +10,8 @@ interface DataStore<T>{
     fun set(o: Metadatable,value: T?)
     fun <T> get(o:Metadatable,defaultValue:T):T
 
-    class MetaStore<T>(override val defaultData: Nothing) :Feature<Nothing>(),DataStore<T>{
+    class MetaStore<T>:Feature<Nothing>(),DataStore<T>{
+        override val defaultData = null
         private val key:String
             get() = "SIMS_${item.name}"
         override fun <T> get(o: Metadatable, defaultValue: T):T {

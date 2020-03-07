@@ -18,6 +18,9 @@ import kotlin.script.experimental.jvm.updateClasspath
 import kotlin.script.experimental.jvm.util.classpathFromClass
 
 object CompilationConfiguration: ScriptCompilationConfiguration({
+    ide{
+
+    }
     jvm {
         dependenciesFromClassloader(
                 "kotlin-stdlib",
@@ -67,7 +70,7 @@ object CompilationConfiguration: ScriptCompilationConfiguration({
                     dependenciesFromClass(*importClasses.toTypedArray())
 
                     if(dependencies.isNotEmpty())
-                    LibraryManager(Paths.get("lib")).apply {
+                    LibraryManager(Paths.get("libs")).apply {
                         addAliYunMirror()
                         dependencies.forEach {
                             require(it)

@@ -28,7 +28,7 @@ abstract class Feature<H> where H : Any {
      * 绑定的Item
      */
     lateinit var item: Item
-    abstract val defaultData: H
+    abstract val defaultData: H?
     /**
      * Feature的配置信息
      */

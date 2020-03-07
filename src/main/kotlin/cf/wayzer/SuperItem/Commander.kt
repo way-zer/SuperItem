@@ -155,11 +155,11 @@ class Commander : CommandExecutor {
             s.sendMessage("§a发现旧实例存在，卸载成功")
         }
         s.sendMessage("§a开始加载脚本，可能会有所卡顿")
-        ItemManager.loadFile(file,"")?.let {
+        ItemManager.loadFile(file,""){
+            if(it==null)return@loadFile s.sendMessage("§c脚本加载失败，查看后台以了解错误信息")
             ItemManager.registerItem(it)
-            return s.sendMessage("§a脚本加载成功")
+            s.sendMessage("§a脚本加载成功")
         }
-        return s.sendMessage("§c脚本加载失败，查看后台以了解错误信息")
     }
 
     private fun help(s: CommandSender) {

@@ -1,7 +1,6 @@
 package cf.wayzer.SuperItem.scripts
 
 import cf.wayzer.SuperItem.Item
-import cf.wayzer.SuperItem.Main
 import java.io.File
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -20,11 +19,11 @@ import kotlin.script.experimental.jvmhost.createJvmCompilationConfigurationFromT
 class ScriptLoader {
     lateinit var logger: Logger
     private val hostConfiguration by lazy { ScriptingHostConfiguration(defaultJvmScriptingHostConfiguration){
-        configurationDependencies(JvmDependency(classpathFromClassloader(Main::class.java.classLoader) ?:listOf()))
+        configurationDependencies(JvmDependency(classpathFromClassloader(ScriptLoader::class.java.classLoader) ?:listOf()))
     }}
     private val compilationConfiguration by lazy {createJvmCompilationConfigurationFromTemplate<SuperItemScript> (hostConfiguration) }
 
-    fun load(file: File):Item?{
+    suspend fun load(file: File):Item?{
         var item:Item?=null
         val result = load0(file)
         result.onSuccess {
@@ -32,11 +31,11 @@ class ScriptLoader {
             if(res.scriptInstance is Item) {
                 item = (res.scriptInstance as Item)
                 result.reports.filterNot { it.severity== ScriptDiagnostic.Severity.DEBUG }.forEachIndexed { index, rep ->
-                    logger.log(Level.WARNING,"##$index##"+rep.message,rep.exception)
+                    logger.log(Level.WARNING,"##$index##"+rep.message+rep.location?.let { "($it)" },rep.exception)
                 }
                 return@onSuccess ResultWithDiagnostics.Success(res)
             } else {
-                return@onSuccess ResultWithDiagnostics.Failure(ScriptDiagnostic("非物品Kts: ${file.name}"))
+                return@onSuccess ResultWithDiagnostics.Failure(ScriptDiagnostic("非物品Kts: ${file.name}: ${res.scriptInstance}"))
             }
         }.onFailure {
             logger.warning("物品Kts加载失败: ")
@@ -47,12 +46,16 @@ class ScriptLoader {
         return item
     }
 
-    private fun load0(f: File):ResultWithDiagnostics<EvaluationResult>{
-        return BasicJvmScriptingHost(hostConfiguration).eval(f.toScriptSource(),compilationConfiguration, ScriptEvaluationConfiguration {
-            jvm {
-                baseClassLoader(ScriptLoader::class.java.classLoader)
-            }
-            constructorArgs(f.name.split(".")[0].toUpperCase())
-        })
+    private val host by lazy {BasicJvmScriptingHost(hostConfiguration)}
+    private suspend fun load0(f: File):ResultWithDiagnostics<EvaluationResult>{
+        return host.compiler(f.toScriptSource(),compilationConfiguration).onSuccess {script->
+            host.evaluator(script,ScriptEvaluationConfiguration {
+                jvm {
+                    baseClassLoader(ScriptLoader::class.java.classLoader)
+                    enableScriptsInstancesSharing()
+                }
+                constructorArgs(f.name.split(".")[0].toUpperCase())
+            })
+        }
     }
 }

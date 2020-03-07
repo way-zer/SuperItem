@@ -31,7 +31,7 @@ object ScriptSupporter {
         inited =true
     }
 
-    fun load(file: File): Item?{
+    suspend fun load(file: File): Item?{
         if(!inited)throw IllegalStateException("Must init first!!")
         return loader.load(file)
     }
