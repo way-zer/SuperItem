@@ -12,12 +12,14 @@ import org.bukkit.inventory.ItemStack
 import java.io.File
 import java.net.URLClassLoader
 import java.util.*
+import java.util.concurrent.atomic.AtomicInteger
 import java.util.logging.Level
 
 object ItemManager {
     private val logger = main.logger
     private val items = HashMap<String, Item>()
     private lateinit var ucl: URLClassLoader
+    private var asyncLoad = AtomicInteger(0)
     lateinit var rootDir: File
 
     /**
@@ -32,6 +34,10 @@ object ItemManager {
         ucl = URLClassLoader.newInstance(arrayOf(rootDir.toURI().toURL()),
                 ItemManager::class.java.classLoader)
         loadDir(rootDir, "")
+        if (asyncLoad.get()>0){
+            logger.info("Wait for all scripts loaded")
+            while (asyncLoad.get()>0) Thread.sleep(100)
+        }
     }
 
     private fun loadDir(dir: File, prefix: String) {
@@ -57,9 +63,14 @@ object ItemManager {
             if (file.name.endsWith("superitem.kts")) {
                 ScriptSupporter.init(logger)
                 logger.info("Load Item in async: ${file.name}")
+                asyncLoad.incrementAndGet()
                 GlobalScope.launch {
-                    callBack(ScriptSupporter.load(file))
-                }
+                    try {
+                        callBack(ScriptSupporter.load(file))
+                    }finally {
+                        asyncLoad.decrementAndGet()
+                    }
+                }.start()
             } else if (file.name.endsWith(".class") && !file.name.contains("$")) {
                 val c = ucl.loadClass(className)
                 if (c.superclass != Item::class.java) {

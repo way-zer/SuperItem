@@ -4,6 +4,7 @@ import cf.wayzer.SuperItem.Feature
 import cf.wayzer.SuperItem.Main
 import de.tr7zw.changeme.nbtapi.NBTCompound
 import de.tr7zw.changeme.nbtapi.NBTItem
+import de.tr7zw.changeme.nbtapi.utils.MinecraftVersion
 import org.bukkit.inventory.ItemStack
 import java.util.logging.Level
 
@@ -71,6 +72,10 @@ class NBT(override vararg val defaultData: AttributeModifier) : Feature<Array<ou
     }
 
     object API {
+        init {
+            MinecraftVersion.disableUpdateCheck()
+            MinecraftVersion.disableBStats()
+        }
         fun read(item: ItemStack): NBTCompound? = NBTItem(item).let { if (it.hasNBTData()) it else null }
         fun readOrCreate(item: ItemStack): NBTCompound = NBTItem(item)
         fun write(item: ItemStack,nbt:NBTCompound){
