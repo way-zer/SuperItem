@@ -1,3 +1,5 @@
+## This project has achived in support of new project ScriptAgent4Bukkit
+There is a module named Superitem in the new project 
 # Superitem
 An extensible custom item minecraft plugin
 * written in Kotlin(Support Java)

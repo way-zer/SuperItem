@@ -71,6 +71,7 @@ object ItemManager {
                         asyncLoad.decrementAndGet()
                     }
                 }.start()
+                return
             } else if (file.name.endsWith(".class") && !file.name.contains("$")) {
                 val c = ucl.loadClass(className)
                 if (c.superclass != Item::class.java) {
